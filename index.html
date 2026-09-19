@@ -43,11 +43,14 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: 
+      background-image: 
         radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.15), transparent 45%),
         radial-gradient(circle at 85% 35%, rgba(139, 92, 246, 0.12), transparent 40%),
-        radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1), transparent 50%),
-        #060813;
+        linear-gradient(to bottom, rgba(6, 8, 19, 0.65), rgba(6, 8, 19, 0.85)),
+        url('BG_SPACE.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       z-index: -2;
     }
 
@@ -654,7 +657,7 @@
       </div>
 
       <div class="game-viewport" id="gameViewport">
-        <iframe src="play/index.html?t=1789836159974" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
+        <iframe src="/play/index.html" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
       </div>
     </div>
   </section>
@@ -1068,14 +1071,39 @@
           }
 
           const targetCountry = (type === 'national') ? 'BR' : null;
+          
+          // 1. Consulta RPC get_top_scores
           const { data, error } = await supabaseClient.rpc('get_top_scores', {
-            p_mode: 'classic',
+            p_mode: 'CLASSIC',
             p_country_code: targetCountry,
-            p_limit: 50
+            p_limit: 100
           });
 
-          if (!error && Array.isArray(data)) {
+          if (!error && Array.isArray(data) && data.length > 0) {
             scores = data;
+          } else {
+            // 2. Fallback direto na tabela scores caso a RPC esteja em manutenção
+            let query = supabaseClient
+              .from('scores')
+              .select('id, player_id, score, level, country_code, platform, created_at, players(nickname, country_code)')
+              .order('score', { ascending: false })
+              .limit(100);
+            
+            if (targetCountry) {
+              query = query.eq('country_code', targetCountry);
+            }
+            const { data: directData, error: directErr } = await query;
+            if (!directErr && Array.isArray(directData) && directData.length > 0) {
+              scores = directData.map((d, i) => ({
+                rank_pos: i + 1,
+                player_id: d.player_id,
+                nickname: d.players?.nickname || 'Jogador',
+                score: d.score,
+                level: d.level,
+                country_code: d.country_code || d.players?.country_code || 'BR',
+                platform: d.platform || 'web'
+              }));
+            }
           }
         }
       } catch (err) {
