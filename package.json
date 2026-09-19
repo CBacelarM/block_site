@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite --port 3000 --host",
+    "build": "vite build",
     "start": "vite --port 3000 --host",
     "serve": "npx serve ."
   },

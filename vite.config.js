@@ -53,6 +53,13 @@ export default defineConfig({
           }
           next();
         });
+      },
+      closeBundle() {
+        const srcDir = path.resolve(process.cwd(), 'play/assets');
+        const destDir = path.resolve(process.cwd(), 'dist/play/assets');
+        if (fs.existsSync(srcDir)) {
+          fs.cpSync(srcDir, destDir, { recursive: true });
+        }
       }
     }
   ],
