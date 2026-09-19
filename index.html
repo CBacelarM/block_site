@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BLOCK - Jogo Oficial</title>
-  <meta name="description" content="Jogue BLOCK online no navegador ou no seu celular Android. Quebra-cabeça viciante, modo aventura e ranking mundial." />
-  
+  <title>BLOCK</title>
+  <meta name="description"
+    content="Jogue BLOCK online no navegador ou no seu celular Android. Quebra-cabeça viciante, modo aventura e ranking mundial." />
+
   <link rel="icon" type="image/png" href="icon-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -26,8 +29,16 @@
       --text-dim: #8e9bb2;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
@@ -43,7 +54,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-image: 
+      background-image:
         radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.15), transparent 45%),
         radial-gradient(circle at 85% 35%, rgba(139, 92, 246, 0.12), transparent 40%),
         linear-gradient(to bottom, rgba(6, 8, 19, 0.65), rgba(6, 8, 19, 0.85)),
@@ -60,17 +71,49 @@
       pointer-events: none;
       z-index: -1;
       opacity: 0.6;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
       animation: float 6s ease-in-out infinite;
     }
+
     @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-18px) rotate(4deg); }
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-18px) rotate(4deg);
+      }
     }
-    .fa-1 { top: 140px; left: 6%; width: 65px; animation-delay: 0s; }
-    .fa-2 { top: 220px; right: 8%; width: 75px; animation-delay: 1.5s; }
-    .fa-3 { top: 600px; left: 10%; width: 55px; animation-delay: 3s; }
-    .fa-4 { top: 850px; right: 12%; width: 60px; animation-delay: 2s; }
+
+    .fa-1 {
+      top: 140px;
+      left: 6%;
+      width: 65px;
+      animation-delay: 0s;
+    }
+
+    .fa-2 {
+      top: 220px;
+      right: 8%;
+      width: 75px;
+      animation-delay: 1.5s;
+    }
+
+    .fa-3 {
+      top: 600px;
+      left: 10%;
+      width: 55px;
+      animation-delay: 3s;
+    }
+
+    .fa-4 {
+      top: 850px;
+      right: 12%;
+      width: 60px;
+      animation-delay: 2s;
+    }
 
     /* Navigation Bar */
     header {
@@ -82,6 +125,7 @@
       background: rgba(6, 8, 19, 0.85);
       border-bottom: 1px solid var(--border);
     }
+
     .header-inner {
       max-width: 1200px;
       margin: 0 auto;
@@ -90,6 +134,7 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .brand {
       display: flex;
       align-items: center;
@@ -97,28 +142,32 @@
       text-decoration: none;
       color: #fff;
     }
+
     .brand img {
       width: 44px;
       height: 44px;
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
     }
+
     .brand span {
       font-size: 26px;
       font-weight: 900;
       letter-spacing: -0.5px;
     }
-    
+
     .nav-actions {
       display: flex;
       align-items: center;
       gap: 16px;
     }
+
     .nav-links {
       display: flex;
       gap: 24px;
       margin-right: 8px;
     }
+
     .nav-links a {
       color: var(--text-dim);
       text-decoration: none;
@@ -126,10 +175,16 @@
       font-weight: 700;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--primary); }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
 
     /* Language Switcher - Mostrar Apenas Bandeira com Seta */
-    .lang-dropdown { position: relative; }
+    .lang-dropdown {
+      position: relative;
+    }
+
     .lang-btn {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -144,8 +199,16 @@
       gap: 6px;
       transition: border-color 0.2s;
     }
-    .lang-btn:hover { border-color: var(--primary); }
-    .lang-arrow { font-size: 11px; color: var(--text-dim); }
+
+    .lang-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .lang-arrow {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
     .lang-menu {
       position: absolute;
       right: 0;
@@ -161,7 +224,11 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       z-index: 1000;
     }
-    .lang-menu.show { display: flex; }
+
+    .lang-menu.show {
+      display: flex;
+    }
+
     .lang-item {
       padding: 8px 12px;
       border-radius: 8px;
@@ -174,11 +241,16 @@
       gap: 10px;
       transition: all 0.15s;
     }
-    .lang-item:hover, .lang-item.active {
+
+    .lang-item:hover,
+    .lang-item.active {
       background: rgba(56, 189, 248, 0.15);
       color: var(--primary);
     }
-    .lang-item span.emoji-flag { font-size: 18px; }
+
+    .lang-item span.emoji-flag {
+      font-size: 18px;
+    }
 
     .btn-header-play {
       background: linear-gradient(135deg, #38bdf8, #2563eb);
@@ -191,6 +263,7 @@
       box-shadow: 0 4px 15px var(--primary-glow);
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .btn-header-play:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
@@ -206,6 +279,7 @@
       gap: 40px;
       align-items: center;
     }
+
     .hero-badge {
       display: inline-flex;
       align-items: center;
@@ -219,6 +293,7 @@
       font-weight: 800;
       margin-bottom: 20px;
     }
+
     .hero-title {
       font-size: 58px;
       font-weight: 900;
@@ -226,12 +301,14 @@
       margin-bottom: 20px;
       letter-spacing: -1.5px;
     }
+
     .hero-title span.gradient-text {
       background: linear-gradient(135deg, #38bdf8, #818cf8, #f43f5e);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .hero-desc {
       font-size: 17px;
       color: var(--text-dim);
@@ -239,12 +316,14 @@
       max-width: 480px;
       line-height: 1.6;
     }
+
     .hero-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
       align-items: center;
     }
+
     .btn-main-play {
       background: linear-gradient(135deg, #38bdf8, #2563eb);
       color: #fff;
@@ -259,10 +338,12 @@
       box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
       transition: all 0.2s;
     }
+
     .btn-main-play:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 30px rgba(56, 189, 248, 0.6);
     }
+
     .btn-store-badge {
       display: inline-flex;
       align-items: center;
@@ -275,13 +356,28 @@
       color: #fff;
       transition: all 0.2s;
     }
+
     .btn-store-badge:hover {
       border-color: var(--primary);
       transform: translateY(-3px);
     }
-    .btn-store-badge svg { width: 28px; height: 28px; }
-    .store-text-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
-    .store-text-main { font-size: 16px; font-weight: 800; }
+
+    .btn-store-badge svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .store-text-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .store-text-main {
+      font-size: 16px;
+      font-weight: 800;
+    }
 
     /* Hero Poster / Banner */
     .hero-art-card {
@@ -289,10 +385,14 @@
       border-radius: 24px;
       overflow: hidden;
       border: 1px solid var(--border);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
       transition: transform 0.3s;
     }
-    .hero-art-card:hover { transform: scale(1.02); }
+
+    .hero-art-card:hover {
+      transform: scale(1.02);
+    }
+
     .hero-art-img {
       width: 100%;
       height: 460px;
@@ -300,6 +400,7 @@
       object-position: center 15%;
       display: block;
     }
+
     .hero-art-overlay {
       position: absolute;
       bottom: 0;
@@ -318,16 +419,19 @@
       margin: 60px auto 80px;
       padding: 0 24px;
     }
+
     .section-header {
       text-align: center;
       margin-bottom: 30px;
     }
+
     .section-header h2 {
       font-size: 36px;
       font-weight: 900;
       letter-spacing: -0.5px;
       margin-bottom: 8px;
     }
+
     .section-header p {
       color: var(--text-dim);
       font-size: 16px;
@@ -343,9 +447,10 @@
       align-items: center;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     }
+
     .game-top-bar {
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -355,6 +460,7 @@
       border-radius: 12px;
       border: 1px solid var(--border);
     }
+
     .game-status-text {
       font-size: 14px;
       font-weight: 800;
@@ -363,6 +469,7 @@
       align-items: center;
       gap: 8px;
     }
+
     .btn-fs {
       background: var(--surface-light);
       border: 1px solid var(--border);
@@ -377,6 +484,7 @@
       gap: 6px;
       transition: all 0.2s;
     }
+
     .btn-fs:hover {
       background: rgba(56, 189, 248, 0.2);
       border-color: var(--primary);
@@ -384,14 +492,16 @@
 
     .game-viewport {
       width: 100%;
-      max-width: 480px;
-      height: 720px;
-      border-radius: 18px;
+      max-width: 440px;
+      height: 780px;
+      max-height: 85vh;
+      border-radius: 20px;
       overflow: hidden;
-      border: 2px solid rgba(56, 189, 248, 0.3);
+      border: 2px solid rgba(56, 189, 248, 0.35);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.2);
       background: #000;
     }
+
     .game-viewport iframe {
       width: 100%;
       height: 100%;
@@ -404,6 +514,7 @@
       margin: 60px auto 80px;
       padding: 0 24px;
     }
+
     .ranking-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -411,6 +522,7 @@
       padding: 32px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
+
     .ranking-card-top {
       display: flex;
       justify-content: space-between;
@@ -421,15 +533,18 @@
       padding-bottom: 18px;
       border-bottom: 1px solid var(--border);
     }
+
     .ranking-card-top h3 {
       font-size: 24px;
       font-weight: 900;
     }
+
     .ranking-card-top p {
       color: var(--text-dim);
       font-size: 14px;
       margin-top: 4px;
     }
+
     .ranking-nav-tabs {
       display: flex;
       background: rgba(0, 0, 0, 0.4);
@@ -438,6 +553,7 @@
       border: 1px solid var(--border);
       gap: 4px;
     }
+
     .tab-btn {
       background: transparent;
       border: none;
@@ -450,18 +566,23 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .tab-btn.active {
       background: var(--primary);
       color: #060813;
       box-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);
     }
 
-    .table-container { overflow-x: auto; }
+    .table-container {
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
     }
+
     th {
       padding: 12px 16px;
       color: var(--text-dim);
@@ -471,19 +592,50 @@
       letter-spacing: 0.5px;
       border-bottom: 1px solid var(--border);
     }
+
     td {
       padding: 14px 16px;
       font-size: 15px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     }
-    tr:hover td { background: rgba(255, 255, 255, 0.02); }
-    .pos-tag { font-weight: 900; font-size: 16px; }
-    .pos-1 { color: #f59e0b; }
-    .pos-2 { color: #cbd5e1; }
-    .pos-3 { color: #d97706; }
-    .player-box { display: flex; align-items: center; gap: 10px; font-weight: 700; }
-    .flag-ico { font-size: 20px; }
-    .score-txt { font-weight: 800; color: var(--primary); font-size: 16px; }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .pos-tag {
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .pos-1 {
+      color: #f59e0b;
+    }
+
+    .pos-2 {
+      color: #cbd5e1;
+    }
+
+    .pos-3 {
+      color: #d97706;
+    }
+
+    .player-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .flag-ico {
+      font-size: 20px;
+    }
+
+    .score-txt {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 16px;
+    }
 
     /* Footer */
     footer {
@@ -491,6 +643,7 @@
       padding: 40px 24px 30px;
       background: #04060d;
     }
+
     .footer-inner {
       max-width: 1200px;
       margin: 0 auto;
@@ -500,16 +653,34 @@
       gap: 30px;
       margin-bottom: 30px;
     }
+
     .footer-brand p {
       color: var(--text-dim);
       font-size: 14px;
       margin-top: 10px;
       max-width: 320px;
     }
-    .footer-links { display: flex; gap: 40px; }
-    .footer-col h4 { font-size: 14px; font-weight: 800; margin-bottom: 12px; color: #fff; }
-    .footer-col ul { list-style: none; }
-    .footer-col li { margin-bottom: 8px; }
+
+    .footer-links {
+      display: flex;
+      gap: 40px;
+    }
+
+    .footer-col h4 {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 8px;
+    }
+
     .footer-col a {
       color: var(--text-dim);
       text-decoration: none;
@@ -517,7 +688,11 @@
       font-weight: 600;
       transition: color 0.2s;
     }
-    .footer-col a:hover { color: var(--primary); }
+
+    .footer-col a:hover {
+      color: var(--primary);
+    }
+
     .footer-bottom {
       max-width: 1200px;
       margin: 0 auto;
@@ -531,16 +706,40 @@
     }
 
     @media (max-width: 868px) {
-      .hero { grid-template-columns: 1fr; text-align: center; }
-      .hero-desc { margin-left: auto; margin-right: auto; }
-      .hero-buttons { justify-content: center; }
-      .hero-title { font-size: 40px; }
-      .hero-art-img { height: 320px; }
-      .nav-links { display: none; }
-      .game-viewport { height: 580px; }
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-desc {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+
+      .hero-title {
+        font-size: 40px;
+      }
+
+      .hero-art-img {
+        height: 320px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .game-viewport {
+        height: 680px;
+        max-height: 80vh;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="bg-canvas"></div>
 
@@ -604,19 +803,21 @@
   <section class="hero">
     <div class="hero-left">
       <div class="hero-badge" data-i18n="hero_badge">O Quebra-Cabeça Mais Viciante de 2026</div>
-      <h1 class="hero-title"><span data-i18n="hero_title_lead">Encaixe, exploda e domine o</span> <span class="gradient-text" data-i18n="hero_highlight">Ranking Mundial!</span></h1>
-      <p class="hero-desc" data-i18n="hero_desc">Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.</p>
-      
+      <h1 class="hero-title"><span data-i18n="hero_title_lead">Encaixe, exploda e domine o</span> <span
+          class="gradient-text" data-i18n="hero_highlight">Ranking Mundial!</span></h1>
+      <p class="hero-desc" data-i18n="hero_desc">Desafie seu raciocínio com fases estratégicas, combos eletrizantes e
+        dispute as primeiras posições da tabela de líderes em tempo real.</p>
+
       <div class="hero-buttons">
         <a href="#jogar" class="btn-main-play" data-i18n="btn_play_now">
           <span>🎮</span> <span data-i18n="btn_play_browser">Jogar no Navegador</span>
         </a>
         <a href="#jogar" class="btn-store-badge">
           <svg viewBox="0 0 512 512">
-            <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
-            <path fill="#34A853" d="M47 0C34 6.8 24 20.6 24 37v438c0 16.4 10 30.2 23 37l244-241L47 0z"/>
-            <path fill="#FBBC04" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z"/>
-            <path fill="#EA4335" d="M385.4 337.8l93.7-53.8c17.5-10 17.5-26.2 0-36.2l-93.7-53.8-60.1 60.1 60.1 83.7z"/>
+            <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" />
+            <path fill="#34A853" d="M47 0C34 6.8 24 20.6 24 37v438c0 16.4 10 30.2 23 37l244-241L47 0z" />
+            <path fill="#FBBC04" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z" />
+            <path fill="#EA4335" d="M385.4 337.8l93.7-53.8c17.5-10 17.5-26.2 0-36.2l-93.7-53.8-60.1 60.1 60.1 83.7z" />
           </svg>
           <div>
             <div class="store-text-sub" data-i18n="store_sub">Disponível no</div>
@@ -631,8 +832,10 @@
         <img src="assets/capaMenu/menuInicial.jpeg" alt="BLOCK Artwork" class="hero-art-img">
         <div class="hero-art-overlay">
           <div>
-            <div style="font-weight: 900; font-size: 18px; color: #fff;" data-i18n="art_title">BLOCK: Estratégia e Quebra-Cabeça</div>
-            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web e Mobile Oficial</div>
+            <div style="font-weight: 900; font-size: 18px; color: #fff;" data-i18n="art_title">BLOCK: Estratégia e
+              Quebra-Cabeça</div>
+            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web e Mobile
+              Oficial</div>
           </div>
         </div>
       </div>
@@ -671,8 +874,10 @@
           <p data-i18n="ranking_subtitle">Recordes oficiais sincronizados com o banco de dados do jogo.</p>
         </div>
         <div class="ranking-nav-tabs">
-          <button class="tab-btn active" id="tabGlobal" onclick="switchRanking('global')" data-i18n="tab_global">🌍 Global</button>
-          <button class="tab-btn" id="tabNational" onclick="switchRanking('national')" data-i18n="tab_national">🇧🇷 Nacional</button>
+          <button class="tab-btn active" id="tabGlobal" onclick="switchRanking('global')" data-i18n="tab_global">🌍
+            Global</button>
+          <button class="tab-btn" id="tabNational" onclick="switchRanking('national')" data-i18n="tab_national">🇧🇷
+            Nacional</button>
         </div>
       </div>
 
@@ -688,7 +893,8 @@
           </thead>
           <tbody id="rankingBody">
             <tr>
-              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;" data-i18n="ranking_connecting">
+              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;"
+                data-i18n="ranking_connecting">
                 Conectando ao banco de dados oficial...
               </td>
             </tr>
@@ -1045,8 +1251,8 @@
     }
 
     const countryFlags = {
-      'BR': '🇧🇷', 'US': '🇺🇸', 'ES': '🇪🇸', 'FR': '🇫🇷', 'RU': '🇷🇺', 
-      'JP': '🇯🇵', 'CN': '🇨🇳', 'DE': '🇩🇪', 'IT': '🇮🇹', 'GB': '🇬🇧', 
+      'BR': '🇧🇷', 'US': '🇺🇸', 'ES': '🇪🇸', 'FR': '🇫🇷', 'RU': '🇷🇺',
+      'JP': '🇯🇵', 'CN': '🇨🇳', 'DE': '🇩🇪', 'IT': '🇮🇹', 'GB': '🇬🇧',
       'PT': '🇵🇹', 'AR': '🇦🇷', 'MX': '🇲🇽', 'CA': '🇨🇦'
     };
 
@@ -1071,7 +1277,7 @@
           }
 
           const targetCountry = (type === 'national') ? 'BR' : null;
-          
+
           // 1. Consulta RPC get_top_scores
           const { data, error } = await supabaseClient.rpc('get_top_scores', {
             p_mode: 'CLASSIC',
@@ -1088,7 +1294,7 @@
               .select('id, player_id, score, level, country_code, platform, created_at, players(nickname, country_code)')
               .order('score', { ascending: false })
               .limit(100);
-            
+
             if (targetCountry) {
               query = query.eq('country_code', targetCountry);
             }
@@ -1168,4 +1374,5 @@
     });
   </script>
 </body>
+
 </html>
