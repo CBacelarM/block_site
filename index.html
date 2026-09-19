@@ -654,7 +654,7 @@
       </div>
 
       <div class="game-viewport" id="gameViewport">
-        <iframe src="play/index.html" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
+        <iframe src="play/index.html?t=1789836159974" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
       </div>
     </div>
   </section>
@@ -1131,6 +1131,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Limpa qualquer hash de âncora para garantir que o reload fique no topo
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname);
+      }
+      window.scrollTo(0, 0);
       loadRanking('global');
     });
   </script>
