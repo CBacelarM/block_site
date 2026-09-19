@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Política de Privacidade - Block Adventures</title>
+  <title>Política de Privacidade - BLOCK</title>
+  <link rel="icon" type="image/png" href="icon-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: rgba(23, 32, 54, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #060813;
+      --surface: #0e1322;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-dim: #8e9bb2;
       --primary: #38bdf8;
-      --accent: #f59e0b;
-      --green: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg);
-      color: var(--text-main);
+      color: var(--text);
       line-height: 1.7;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 40%);
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        #060813;
     }
     header {
-      padding: 24px 20px;
-      border-bottom: 1px solid var(--card-border);
-      background: rgba(11, 15, 25, 0.8);
-      backdrop-filter: blur(12px);
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6, 8, 19, 0.85);
+      backdrop-filter: blur(16px);
     }
-    .header-container {
+    .header-inner {
       max-width: 900px;
       margin: 0 auto;
       display: flex;
@@ -50,24 +50,20 @@
       gap: 12px;
       text-decoration: none;
       color: #fff;
-      font-weight: 800;
-      font-size: 20px;
+      font-weight: 900;
+      font-size: 24px;
     }
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #38bdf8, #6366f1);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
     }
     .nav-link {
-      color: var(--text-muted);
+      color: var(--text-dim);
       text-decoration: none;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       transition: color 0.2s;
     }
     .nav-link:hover { color: var(--primary); }
@@ -79,59 +75,55 @@
       width: 100%;
     }
     .legal-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
       padding: 40px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
     h1 {
       font-size: 32px;
-      font-weight: 800;
+      font-weight: 900;
       margin-bottom: 8px;
-      background: linear-gradient(135deg, #ffffff, #94a3b8);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
     .update-tag {
       font-size: 14px;
-      color: var(--text-muted);
+      color: var(--text-dim);
       margin-bottom: 28px;
       padding-bottom: 20px;
-      border-bottom: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--border);
     }
     h2 {
       color: var(--primary);
       font-size: 20px;
       margin: 28px 0 12px 0;
-      font-weight: 700;
+      font-weight: 800;
     }
     p, li {
-      color: var(--text-muted);
+      color: var(--text-dim);
       font-size: 15px;
       margin-bottom: 12px;
     }
     ul { padding-left: 24px; margin-bottom: 16px; }
     li { margin-bottom: 6px; }
-    strong { color: #f1f5f9; }
+    strong { color: #fff; }
     footer {
-      border-top: 1px solid var(--card-border);
+      border-top: 1px solid var(--border);
       padding: 24px 20px;
       text-align: center;
-      color: var(--text-muted);
+      color: var(--text-dim);
       font-size: 13px;
       margin-top: 40px;
+      background: #04060d;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="header-container">
+    <div class="header-inner">
       <a href="index.html" class="brand">
-        <div class="brand-icon">🎮</div>
-        <span>Block Adventures</span>
+        <img src="icon-512.png" alt="BLOCK">
+        <span>BLOCK</span>
       </a>
       <a href="index.html" class="nav-link">← Voltar ao Início</a>
     </div>
@@ -142,10 +134,10 @@
       <h1>Política de Privacidade</h1>
       <div class="update-tag">Última atualização: Setembro de 2026</div>
 
-      <p>Esta Política de Privacidade descreve como o jogo <strong>Block Adventures</strong> ("nós", "nosso") coleta, utiliza e protege suas informações ao utilizar nosso aplicativo.</p>
+      <p>Esta Política de Privacidade descreve como o jogo <strong>BLOCK</strong> ("nós", "nosso") coleta, utiliza e protege suas informações ao utilizar nosso aplicativo na Web e no Android.</p>
 
       <h2>1. Informações Coletadas</h2>
-      <p>O <strong>Block Adventures</strong> foi desenvolvido com total foco na privacidade e segurança do jogador. Coletamos apenas as informações mínimas estritamente necessárias para as funcionalidades de jogabilidade e ranking:</p>
+      <p>O <strong>BLOCK</strong> foi desenvolvido com total foco na privacidade e segurança do jogador. Coletamos apenas as informações mínimas estritamente necessárias para as funcionalidades de jogabilidade e ranking:</p>
       <ul>
         <li><strong>Identificador Anônimo de Jogador (ID):</strong> Identificador gerado no dispositivo para associar suas pontuações e recordes.</li>
         <li><strong>Nome / Apelido Escolhido:</strong> O nome público fornecido por você para exibição nas tabelas de classificação.</li>
@@ -177,12 +169,12 @@
       <p>O jogo é livre para todas as idades (Classificação Livre / Família) e não coleta dados pessoais identificáveis de crianças ou menores de idade.</p>
 
       <h2>6. Contato e Suporte</h2>
-      <p>Se você tiver quaisquer dúvidas, sugestões ou solicitações sobre esta política, entre em contato através dos canais de suporte oficiais na página do aplicativo na Google Play Store.</p>
+      <p>Se você tiver quaisquer dúvidas, sugestões ou solicitações sobre esta política, entre em contato através dos canais de suporte oficiais na página do aplicativo na Google Play Store ou no portal oficial.</p>
     </div>
   </main>
 
   <footer>
-    &copy; 2026 Block Adventures. Todos os direitos reservados.
+    &copy; 2026 BLOCK. Todos os direitos reservados.
   </footer>
 </body>
 </html>

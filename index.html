@@ -3,60 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Block Adventures - O Jogo Definitivo de Quebra-Cabeça</title>
-  <meta name="description" content="Desafie seu raciocínio com Block Adventures! Jogue o modo Aventura com centenas de fases, compita no Ranking Nacional e Global." />
+  <title>BLOCK - Jogo Oficial</title>
+  <meta name="description" content="Jogue BLOCK online no navegador ou no seu celular Android. Quebra-cabeça viciante, modo aventura e ranking mundial." />
+  
+  <link rel="icon" type="image/png" href="icon-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
-      --bg-dark: #070913;
-      --bg-card: rgba(18, 24, 38, 0.7);
-      --border-card: rgba(255, 255, 255, 0.08);
+      --bg: #060813;
+      --surface: #0e1322;
+      --surface-light: #161d33;
       --primary: #38bdf8;
-      --primary-glow: rgba(56, 189, 248, 0.4);
-      --accent-yellow: #f59e0b;
-      --accent-purple: #8b5cf6;
-      --accent-rose: #f43f5e;
-      --accent-green: #10b981;
-      --text-main: #ffffff;
-      --text-muted: #94a3b8;
+      --primary-glow: rgba(56, 189, 248, 0.35);
+      --accent: #f59e0b;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-dim: #8e9bb2;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-    
-    .glow-bg {
-      position: fixed;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      filter: blur(140px);
-      z-index: -1;
-      opacity: 0.25;
-      pointer-events: none;
-    }
-    .glow-1 { top: -100px; left: -100px; background: #38bdf8; }
-    .glow-2 { top: 40%; right: -150px; background: #8b5cf6; }
-    .glow-3 { bottom: 0; left: 20%; background: #f59e0b; }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Ambient Game Background */
+    .bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 35%, rgba(139, 92, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.1), transparent 50%),
+        #060813;
+      z-index: -2;
+    }
+
+    /* Floating Game Blocks in Background */
+    .floating-asset {
+      position: absolute;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.6;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(4deg); }
+    }
+    .fa-1 { top: 140px; left: 6%; width: 65px; animation-delay: 0s; }
+    .fa-2 { top: 220px; right: 8%; width: 75px; animation-delay: 1.5s; }
+    .fa-3 { top: 600px; left: 10%; width: 55px; animation-delay: 3s; }
+    .fa-4 { top: 850px; right: 12%; width: 60px; animation-delay: 2s; }
+
+    /* Navigation Bar */
     header {
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(16px);
-      background: rgba(7, 9, 19, 0.75);
-      border-bottom: 1px solid var(--border-card);
-      padding: 16px 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(6, 8, 19, 0.85);
+      border-bottom: 1px solid var(--border);
     }
-    .nav-container {
+    .header-inner {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 12px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -67,351 +93,548 @@
       gap: 12px;
       text-decoration: none;
       color: #fff;
+    }
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+    .brand span {
+      font-size: 26px;
       font-weight: 900;
-      font-size: 22px;
       letter-spacing: -0.5px;
     }
-    .brand-box {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #38bdf8, #6366f1);
-      border-radius: 12px;
+    
+    .nav-actions {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 0 20px var(--primary-glow);
+      gap: 16px;
     }
     .nav-links {
       display: flex;
-      align-items: center;
-      gap: 28px;
+      gap: 24px;
+      margin-right: 8px;
     }
     .nav-links a {
-      color: var(--text-muted);
+      color: var(--text-dim);
       text-decoration: none;
-      font-weight: 600;
       font-size: 15px;
+      font-weight: 700;
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--primary); }
-    .btn-header {
-      background: linear-gradient(135deg, #38bdf8, #2563eb);
-      color: #fff !important;
-      padding: 10px 20px;
+
+    /* Language Switcher */
+    .lang-dropdown { position: relative; }
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 14px;
       border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
       font-weight: 700;
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s !important;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s;
     }
-    .btn-header:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+    .lang-btn:hover { border-color: var(--primary); }
+    .lang-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 150px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+    }
+    .lang-menu.show { display: flex; }
+    .lang-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+    .lang-item:hover, .lang-item.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
     }
 
+    .btn-header-play {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-header-play:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    }
+
+    /* Hero Section */
     .hero {
       max-width: 1200px;
-      margin: 60px auto 100px;
+      margin: 40px auto 60px;
       padding: 0 24px;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 60px;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
       align-items: center;
     }
-    .hero-tag {
+    .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       color: var(--primary);
       padding: 6px 14px;
       border-radius: 99px;
       font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
     }
     .hero-title {
-      font-size: 54px;
+      font-size: 58px;
       font-weight: 900;
-      line-height: 1.15;
+      line-height: 1.08;
       margin-bottom: 20px;
-      letter-spacing: -1px;
+      letter-spacing: -1.5px;
     }
     .hero-title span {
-      background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #f43f5e);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-desc {
-      font-size: 18px;
-      color: var(--text-muted);
-      margin-bottom: 36px;
-      max-width: 540px;
+      font-size: 17px;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      max-width: 480px;
+      line-height: 1.6;
     }
-    .hero-actions {
+    .hero-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
       align-items: center;
     }
-    .btn-playstore {
+    .btn-main-play {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 30px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 14px;
-      background: #111827;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 12px 24px;
+      gap: 10px;
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-main-play:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.6);
+    }
+    .btn-store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #0f1423;
+      border: 1px solid var(--border);
+      padding: 12px 22px;
       border-radius: 14px;
       text-decoration: none;
       color: #fff;
       transition: all 0.2s;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
     }
-    .btn-playstore:hover {
+    .btn-store-badge:hover {
       border-color: var(--primary);
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25);
     }
-    .btn-playstore svg { width: 32px; height: 32px; }
-    .btn-playstore .btn-text-small { font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; }
-    .btn-playstore .btn-text-big { font-size: 18px; font-weight: 800; line-height: 1.2; }
+    .btn-store-badge svg { width: 28px; height: 28px; }
+    .store-text-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
+    .store-text-main { font-size: 16px; font-weight: 800; }
 
-    .hero-visual {
-      display: flex;
-      justify-content: center;
+    /* Hero Poster / Banner */
+    .hero-art-card {
       position: relative;
-    }
-    .phone-frame {
-      width: 300px;
-      height: 580px;
-      background: #000;
-      border-radius: 40px;
-      border: 10px solid #1e293b;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
-      position: relative;
+      border-radius: 24px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+      transition: transform 0.3s;
     }
-    .phone-notch {
-      width: 120px;
-      height: 18px;
-      background: #1e293b;
-      margin: 0 auto;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
-    }
-    .phone-screen {
-      flex: 1;
-      background: linear-gradient(180deg, #090e1a 0%, #172033 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
-      position: relative;
-    }
-    .mock-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 3px;
+    .hero-art-card:hover { transform: scale(1.02); }
+    .hero-art-img {
       width: 100%;
-      max-width: 220px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 8px;
-      border-radius: 12px;
-      margin-top: 15px;
+      height: 520px;
+      object-position: center top;
+      padding-top: 15px;
+      object-fit: contain;
+      background: #000;
+      display: block;
     }
-    .mock-cell {
-      width: 100%;
-      aspect-ratio: 1;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 4px;
+    .hero-art-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px 24px 20px;
+      background: linear-gradient(0deg, rgba(6, 8, 19, 0.95) 0%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
     }
-    .mock-cell.active-cyan { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
-    .mock-cell.active-yellow { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
-    .mock-cell.active-purple { background: #8b5cf6; box-shadow: 0 0 6px #8b5cf6; }
-    .mock-cell.active-rose { background: #f43f5e; box-shadow: 0 0 6px #f43f5e; }
 
-    .features {
+    /* Game Live Player Section */
+    .game-section {
       max-width: 1200px;
-      margin: 80px auto;
+      margin: 60px auto 80px;
       padding: 0 24px;
     }
     .section-header {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
     }
     .section-header h2 {
-      font-size: 38px;
-      font-weight: 800;
-      margin-bottom: 12px;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
     }
     .section-header p {
-      color: var(--text-muted);
-      font-size: 17px;
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    .game-frame-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+    .game-top-bar {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 8px 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .game-status-text {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-fs {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-fs:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--primary);
+    }
+
+    .game-viewport {
+      width: 100%;
+      max-width: 480px;
+      height: 720px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.2);
+      background: #000;
+    }
+    .game-viewport iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Live Ranking Section */
+    .ranking-section {
+      max-width: 1200px;
+      margin: 60px auto 80px;
+      padding: 0 24px;
+    }
+    .ranking-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+    .ranking-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ranking-card-top h3 {
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .ranking-card-top p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .ranking-nav-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #060813;
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .table-container { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th {
+      padding: 12px 16px;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .pos-tag { font-weight: 900; font-size: 16px; }
+    .pos-1 { color: #f59e0b; }
+    .pos-2 { color: #cbd5e1; }
+    .pos-3 { color: #d97706; }
+    .player-box { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .flag-ico { font-size: 20px; }
+    .score-txt { font-weight: 800; color: var(--primary); font-size: 16px; }
+
+    /* Highlights / Features Grid */
+    .features-section {
+      max-width: 1200px;
+      margin: 60px auto 80px;
+      padding: 0 24px;
     }
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
     }
-    .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
+    .feature-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(10px);
+      padding: 28px;
       transition: transform 0.2s, border-color 0.2s;
     }
-    .feature-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(56, 189, 248, 0.4);
+    .feature-item:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.3);
     }
-    .feature-icon {
-      width: 52px;
-      height: 52px;
+    .feature-img-box {
+      width: 54px;
+      height: 54px;
       border-radius: 14px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
-    .icon-1 { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-    .icon-2 { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-    .icon-3 { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
-    .icon-4 { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-    .feature-card h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    .feature-img-box img { width: 34px; height: 34px; object-fit: contain; }
+    .feature-item h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .feature-item p { color: var(--text-dim); font-size: 14px; line-height: 1.5; }
 
-    .cta-banner {
-      max-width: 1200px;
-      margin: 100px auto 80px;
-      padding: 0 24px;
-    }
-    .cta-inner {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 24px;
-      padding: 60px 40px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-    .cta-inner h2 {
-      font-size: 38px;
-      font-weight: 900;
-      margin-bottom: 16px;
-    }
-    .cta-inner p {
-      color: var(--text-muted);
-      font-size: 18px;
-      margin-bottom: 32px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
+    /* Footer */
     footer {
-      border-top: 1px solid var(--border-card);
-      padding: 50px 24px 30px;
-      background: rgba(7, 9, 19, 0.9);
+      border-top: 1px solid var(--border);
+      padding: 40px 24px 30px;
+      background: #04060d;
     }
-    .footer-container {
+    .footer-inner {
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       gap: 30px;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     .footer-brand p {
-      color: var(--text-muted);
+      color: var(--text-dim);
       font-size: 14px;
       margin-top: 10px;
-      max-width: 300px;
+      max-width: 320px;
     }
-    .footer-links {
-      display: flex;
-      gap: 40px;
-    }
-    .footer-column h4 {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: #fff;
-    }
-    .footer-column ul { list-style: none; }
-    .footer-column li { margin-bottom: 8px; }
-    .footer-column a {
-      color: var(--text-muted);
+    .footer-links { display: flex; gap: 40px; }
+    .footer-col h4 { font-size: 14px; font-weight: 800; margin-bottom: 12px; color: #fff; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 8px; }
+    .footer-col a {
+      color: var(--text-dim);
       text-decoration: none;
       font-size: 14px;
+      font-weight: 600;
       transition: color 0.2s;
     }
-    .footer-column a:hover { color: var(--primary); }
+    .footer-col a:hover { color: var(--primary); }
     .footer-bottom {
       max-width: 1200px;
       margin: 0 auto;
       padding-top: 20px;
-      border-top: 1px solid var(--border-card);
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: var(--text-muted);
+      color: var(--text-dim);
       font-size: 13px;
     }
 
     @media (max-width: 868px) {
       .hero { grid-template-columns: 1fr; text-align: center; }
       .hero-desc { margin-left: auto; margin-right: auto; }
-      .hero-actions { justify-content: center; }
+      .hero-buttons { justify-content: center; }
       .hero-title { font-size: 40px; }
+      .hero-art-img { height: 320px; }
       .nav-links { display: none; }
+      .game-viewport { height: 580px; }
     }
   </style>
 </head>
 <body>
-  <div class="glow-bg glow-1"></div>
-  <div class="glow-bg glow-2"></div>
-  <div class="glow-bg glow-3"></div>
+  <div class="bg-canvas"></div>
 
+  <!-- Floating Game Graphic Blocks -->
+  <img src="assets/blocks/Cyan.png" class="floating-asset fa-1" alt="Block Cyan">
+  <img src="assets/blocks/Yellow.png" class="floating-asset fa-2" alt="Block Yellow">
+  <img src="assets/blocks/Purple.png" class="floating-asset fa-3" alt="Block Purple">
+  <img src="assets/blocks/Red.png" class="floating-asset fa-4" alt="Block Red">
+
+  <!-- Header -->
   <header>
-    <div class="nav-container">
+    <div class="header-inner">
       <a href="index.html" class="brand">
-        <div class="brand-box">🎮</div>
-        <span>Block Adventures</span>
+        <img src="icon-512.png" alt="BLOCK Logo">
+        <span>BLOCK</span>
       </a>
-      <div class="nav-links">
-        <a href="#recursos">Recursos</a>
-        <a href="privacy.html">Privacidade</a>
-        <a href="#download" class="btn-header">Baixar Agora</a>
+
+      <div class="nav-actions">
+        <div class="nav-links">
+          <a href="#jogar" data-i18n="nav_play">Jogar Online</a>
+          <a href="#ranking" data-i18n="nav_ranking">Ranking</a>
+          
+        </div>
+
+        <!-- Language Selector -->
+        <div class="lang-dropdown">
+          <button class="lang-btn" id="langBtn" onclick="toggleLangMenu()">
+            <span id="currentLangFlag">🇧🇷</span>
+            <span id="currentLangName">PT</span>
+            <span>▾</span>
+          </button>
+          <div class="lang-menu" id="langMenu">
+            <div class="lang-item active" onclick="setLanguage('pt')">🇧🇷 Português</div>
+            <div class="lang-item" onclick="setLanguage('en')">🇺🇸 English</div>
+            <div class="lang-item" onclick="setLanguage('es')">🇪🇸 Español</div>
+            <div class="lang-item" onclick="setLanguage('fr')">🇫🇷 Français</div>
+            <div class="lang-item" onclick="setLanguage('ru')">🇷🇺 Русский</div>
+            <div class="lang-item" onclick="setLanguage('ja')">🇯🇵 日本語</div>
+            <div class="lang-item" onclick="setLanguage('zh')">🇨🇳 简体中文</div>
+          </div>
+        </div>
+
+        <a href="#jogar" class="btn-header-play" data-i18n="btn_play_header">▶ Jogar</a>
       </div>
     </div>
   </header>
 
+  <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-content">
-      <div class="hero-tag">✨ O Quebra-Cabeça Mais Viciante de 2026</div>
-      <h1 class="hero-title">Encaixe, exploda e domine o <span>Ranking Global!</span></h1>
-      <p class="hero-desc">Desafie seu raciocínio com centenas de fases emocionantes, efeitos visuais vibrantes e uma competição nacional e mundial em tempo real.</p>
+    <div class="hero-left">
+      <div class="hero-badge" data-i18n="hero_badge">O Quebra-Cabeça Mais Viciante de 2026</div>
+      <h1 class="hero-title">Encaixe, exploda e domine o <span data-i18n="hero_highlight">Ranking Mundial!</span></h1>
+      <p class="hero-desc" data-i18n="hero_desc">Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.</p>
       
-      <div class="hero-actions" id="download">
-        <a href="#" class="btn-playstore">
+      <div class="hero-buttons">
+        <a href="#jogar" class="btn-main-play" data-i18n="btn_play_now">
+          <span>🎮</span> <span data-i18n="btn_play_browser">Jogar no Navegador</span>
+        </a>
+        <a href="#jogar" class="btn-store-badge">
           <svg viewBox="0 0 512 512">
             <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
             <path fill="#34A853" d="M47 0C34 6.8 24 20.6 24 37v438c0 16.4 10 30.2 23 37l244-241L47 0z"/>
@@ -419,114 +642,566 @@
             <path fill="#EA4335" d="M385.4 337.8l93.7-53.8c17.5-10 17.5-26.2 0-36.2l-93.7-53.8-60.1 60.1 60.1 83.7z"/>
           </svg>
           <div>
-            <div class="btn-text-small">Disponível no</div>
-            <div class="btn-text-big">Google Play</div>
+            <div class="store-text-sub" data-i18n="store_sub">Disponível no</div>
+            <div class="store-text-main">Google Play</div>
           </div>
         </a>
       </div>
     </div>
 
-    <div class="hero-visual">
-      <div class="phone-frame">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div style="font-weight: 800; font-size: 18px; color: #38bdf8; margin-bottom: 4px;">🏆 RECORDE: 14.850</div>
-          <div style="font-size: 12px; color: #94a3b8;">Fase 42 • Modo Aventura</div>
-          
-          <div class="mock-grid">
-            <div class="mock-cell"></div><div class="mock-cell active-cyan"></div><div class="mock-cell active-cyan"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-yellow"></div><div class="mock-cell"></div><div class="mock-cell"></div>
-            <div class="mock-cell"></div><div class="mock-cell active-cyan"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-yellow"></div><div class="mock-cell active-yellow"></div><div class="mock-cell active-yellow"></div><div class="mock-cell"></div>
-            <div class="mock-cell active-purple"></div><div class="mock-cell active-purple"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div>
-            <div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-rose"></div><div class="mock-cell active-rose"></div><div class="mock-cell active-rose"></div><div class="mock-cell"></div><div class="mock-cell active-cyan"></div><div class="mock-cell active-cyan"></div>
-            <div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-rose"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-cyan"></div><div class="mock-cell active-cyan"></div>
-            <div class="mock-cell active-yellow"></div><div class="mock-cell active-yellow"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell active-purple"></div><div class="mock-cell active-purple"></div><div class="mock-cell"></div><div class="mock-cell"></div>
-            <div class="mock-cell active-yellow"></div><div class="mock-cell active-yellow"></div><div class="mock-cell active-yellow"></div><div class="mock-cell"></div><div class="mock-cell active-purple"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div>
-            <div class="mock-cell"></div><div class="mock-cell active-rose"></div><div class="mock-cell active-rose"></div><div class="mock-cell active-rose"></div><div class="mock-cell active-rose"></div><div class="mock-cell"></div><div class="mock-cell"></div><div class="mock-cell"></div>
+    <div class="hero-right">
+      <div class="hero-art-card">
+        <img src="assets/capaMenu/menuInicial.jpeg" alt="BLOCK Gameplay Artwork" class="hero-art-img">
+        <div class="hero-art-overlay">
+          <div>
+            <div style="font-weight: 900; font-size: 18px; color: #fff;">BLOCK: Strategy & Puzzle</div>
+            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web & Mobile Oficial</div>
           </div>
-          <div style="margin-top: 15px; font-weight: 700; font-size: 13px; color: #10b981;">⚡ COMBO X4! +480 PTS</div>
+          <span style="font-size: 24px;">⭐ 4.9</span>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="features" id="recursos">
+  <!-- Web Game Section -->
+  <section class="game-section" id="jogar">
     <div class="section-header">
-      <h2>Por que você vai amar o jogo?</h2>
-      <p>Desenvolvido para proporcionar momentos de relaxamento e pura estratégia.</p>
+      <h2 data-i18n="game_title">🎮 Jogue BLOCK Agora</h2>
+      <p data-i18n="game_subtitle">Direto no seu navegador! Carregamento rápido sem precisar baixar nada.</p>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon icon-1">🗺️</div>
-        <h3>Modo Aventura</h3>
-        <p>Viaje por mapas temáticos resolvendo centenas de desafios únicos, metas de pontuação e obstáculos especiais.</p>
+    <div class="game-frame-box">
+      <div class="game-top-bar">
+        <div class="game-status-text">
+          <span></span> <span data-i18n="status_online">Versão Web 100% Online</span>
+        </div>
+        <button class="btn-fs" onclick="toggleFullscreen()">
+          <span>⛶</span> <span data-i18n="fs_btn">Tela Cheia</span>
+        </button>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-2">♾️</div>
-        <h3>Modo Clássico</h3>
-        <p>A experiência infinita e relaxante para testar seu limite de concentração sem pressão de tempo.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-3">🇧🇷</div>
-        <h3>Ranking Nacional & Global</h3>
-        <p>Represente seu país e dispute as primeiras posições da tabela de classificação mundial em tempo real.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon icon-4">✨</div>
-        <h3>Visuais e Sons Imersivos</h3>
-        <p>Efeitos de explosão vibrantes, partículas fluidas e trilhas sonoras relaxantes para a melhor experiência.</p>
+
+      <div class="game-viewport" id="gameViewport">
+        <iframe src="play/index.html" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
       </div>
     </div>
   </section>
 
-  <div class="cta-banner">
-    <div class="cta-inner">
-      <h2>Pronto para desafiar sua mente?</h2>
-      <p>Baixe gratuitamente agora mesmo no seu smartphone Android e comece a pontuar!</p>
-      <a href="#download" class="btn-playstore" style="display: inline-flex;">
-        <svg viewBox="0 0 512 512">
-          <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
-          <path fill="#34A853" d="M47 0C34 6.8 24 20.6 24 37v438c0 16.4 10 30.2 23 37l244-241L47 0z"/>
-          <path fill="#FBBC04" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z"/>
-          <path fill="#EA4335" d="M385.4 337.8l93.7-53.8c17.5-10 17.5-26.2 0-36.2l-93.7-53.8-60.1 60.1 60.1 83.7z"/>
-        </svg>
+  <!-- Live Ranking Section -->
+  <section class="ranking-section" id="ranking">
+    <div class="ranking-card">
+      <div class="ranking-card-top">
         <div>
-          <div class="btn-text-small">Instalar Grátis no</div>
-          <div class="btn-text-big">Google Play</div>
+          <h3><span>🏆</span> <span data-i18n="ranking_title">Quadro de Líderes em Tempo Real</span></h3>
+          <p data-i18n="ranking_subtitle">Recordes oficiais sincronizados com o banco de dados do jogo.</p>
         </div>
-      </a>
-    </div>
-  </div>
+        <div class="ranking-nav-tabs">
+          <button class="tab-btn active" id="tabGlobal" onclick="switchRanking('global')" data-i18n="tab_global">🌍 Global</button>
+          <button class="tab-btn" id="tabNational" onclick="switchRanking('national')" data-i18n="tab_national">🇧🇷 Nacional</button>
+        </div>
+      </div>
 
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="th_rank">Posição</th>
+              <th data-i18n="th_player">Jogador</th>
+              <th data-i18n="th_country">País</th>
+              <th data-i18n="th_score">Pontuação</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;">
+                Conectando ao banco de dados oficial...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- Footer -->
   <footer>
-    <div class="footer-container">
+    <div class="footer-inner">
       <div class="footer-brand">
         <a href="index.html" class="brand">
-          <div class="brand-box">🎮</div>
-          <span>Block Adventures</span>
+          <img src="icon-512.png" alt="BLOCK Logo">
+          <span>BLOCK</span>
         </a>
-        <p>O jogo definitivo de estratégia e quebra-cabeça de blocos para Android.</p>
+        <p data-i18n="footer_desc">O quebra-cabeça definitivo de estratégia para Web e Android.</p>
       </div>
+
       <div class="footer-links">
-        <div class="footer-column">
-          <h4>Navegação</h4>
+        <div class="footer-col">
+          <h4 data-i18n="footer_nav">Navegação</h4>
           <ul>
-            <li><a href="#recursos">Recursos</a></li>
-            <li><a href="#download">Download</a></li>
+            <li><a href="#jogar" data-i18n="nav_play">Jogar Online</a></li>
+            <li><a href="#ranking" data-i18n="nav_ranking">Ranking</a></li>
+            
           </ul>
         </div>
-        <div class="footer-column">
-          <h4>Legal</h4>
+        <div class="footer-col">
+          <h4 data-i18n="footer_legal">Legal</h4>
           <ul>
-            <li><a href="privacy.html">Política de Privacidade</a></li>
+            <li><a href="privacy.html" data-i18n="nav_privacy">Política de Privacidade</a></li>
           </ul>
         </div>
       </div>
     </div>
+
     <div class="footer-bottom">
-      <div>&copy; 2026 Block Adventures. Todos os direitos reservados.</div>
-      <div>Feito com paixão para jogadores de todas as idades.</div>
+      <div>&copy; 2026 BLOCK. <span data-i18n="footer_rights">Todos os direitos reservados.</span></div>
+      <div data-i18n="footer_tag">Feito com paixão para jogadores de todas as idades.</div>
     </div>
   </footer>
+
+  <!-- Scripts -->
+  <script>
+    // 1. Translations
+    const translations = {
+      pt: {
+        nav_play: "Jogar Online",
+        nav_ranking: "Ranking",
+        nav_features: "Recursos",
+        nav_privacy: "Política de Privacidade",
+        btn_play_header: "▶ Jogar",
+        hero_badge: "O Quebra-Cabeça Mais Viciante de 2026",
+        hero_highlight: "Ranking Mundial!",
+        hero_desc: "Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.",
+        btn_play_now: "Jogar no Navegador",
+        btn_play_browser: "Jogar no Navegador",
+        store_sub: "Disponível no",
+        art_sub: "Web & Mobile Oficial",
+        game_title: "🎮 Jogue BLOCK Agora",
+        game_subtitle: "Direto no seu navegador! Carregamento rápido sem precisar baixar nada.",
+        status_online: "Versão Web 100% Online",
+        fs_btn: "Tela Cheia",
+        ranking_title: "Quadro de Líderes em Tempo Real",
+        ranking_subtitle: "Recordes oficiais sincronizados com o banco de dados do jogo.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 Nacional",
+        th_rank: "Posição",
+        th_player: "Jogador",
+        th_country: "País",
+        th_score: "Pontuação",
+        feat_title: "Recursos do Jogo",
+        feat_subtitle: "Uma experiência completa desenvolvida com estética moderna e som imersivo.",
+        f1_title: "Modo Aventura",
+        f1_desc: "Avance por dezenas de fases com objetivos desafiadores e metas de pontos.",
+        f2_title: "Modo Clássico",
+        f2_desc: "A experiência clássica sem limites de tempo para relaxar e bater seus recordes.",
+        f3_title: "Ranking Nacional & Global",
+        f3_desc: "Dispute posições em tempo real representando a bandeira do seu país.",
+        f4_title: "Visual e Som Neon",
+        f4_desc: "Partículas fluidas, efeitos de explosão satisfatórios e trilhas sonoras relaxantes.",
+        footer_desc: "O quebra-cabeça definitivo de estratégia para Web e Android.",
+        footer_nav: "Navegação",
+        footer_legal: "Legal",
+        footer_rights: "Todos os direitos reservados.",
+        footer_tag: "Feito com paixão para jogadores de todas as idades."
+      },
+      en: {
+        nav_play: "Play Online",
+        nav_ranking: "Leaderboard",
+        nav_features: "Features",
+        nav_privacy: "Privacy Policy",
+        btn_play_header: "▶ Play",
+        hero_badge: "The Most Addictive Puzzle of 2026",
+        hero_highlight: "Global Leaderboard!",
+        hero_desc: "Challenge your mind with strategic levels, electrifying combos, and compete for top ranks in real time.",
+        btn_play_now: "Play in Browser",
+        btn_play_browser: "Play in Browser",
+        store_sub: "Get it on",
+        art_sub: "Official Web & Mobile",
+        game_title: "🎮 Play BLOCK Now",
+        game_subtitle: "Right in your browser! Fast loading with zero downloads required.",
+        status_online: "100% Online Web Version",
+        fs_btn: "Fullscreen",
+        ranking_title: "Real-Time Leaderboard",
+        ranking_subtitle: "Official high scores synced with game database.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 National",
+        th_rank: "Rank",
+        th_player: "Player",
+        th_country: "Country",
+        th_score: "Score",
+        feat_title: "Game Features",
+        feat_subtitle: "A complete experience designed with modern aesthetics and immersive audio.",
+        f1_title: "Adventure Mode",
+        f1_desc: "Progress through dozens of levels with challenging goals and high scores.",
+        f2_title: "Classic Mode",
+        f2_desc: "The timeless puzzle experience with no time limits to beat your high score.",
+        f3_title: "National & Global Ranks",
+        f3_desc: "Compete live representing your country flag on the world stage.",
+        f4_title: "Neon Visuals & Audio",
+        f4_desc: "Fluid particle explosions and satisfying sound design.",
+        footer_desc: "The ultimate block puzzle strategy game for Web and Android.",
+        footer_nav: "Navigation",
+        footer_legal: "Legal",
+        footer_rights: "All rights reserved.",
+        footer_tag: "Crafted with passion for players of all ages."
+      },
+      es: {
+        nav_play: "Jugar Online",
+        nav_ranking: "Clasificación",
+        nav_features: "Características",
+        nav_privacy: "Política de Privacidad",
+        btn_play_header: "▶ Jugar",
+        hero_badge: "El Rompecabezas Más Adictivo de 2026",
+        hero_highlight: "¡Ránking Mundial!",
+        hero_desc: "Desafía tu mente con niveles estratégicos y compite por los primeros puestos en tiempo real.",
+        btn_play_now: "Jugar en Navegador",
+        btn_play_browser: "Jugar en Navegador",
+        store_sub: "Disponible en",
+        art_sub: "Web & Móvil Oficial",
+        game_title: "🎮 Juega a BLOCK Ahora",
+        game_subtitle: "¡En tu navegador! Carga rápida sin necesidad de descargas.",
+        status_online: "Versión Web 100% Online",
+        fs_btn: "Pantalla Completa",
+        ranking_title: "Tabla de Líderes en Tiempo Real",
+        ranking_subtitle: "Puntuaciones oficiales sincronizadas con la base de datos.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 Nacional",
+        th_rank: "Puesto",
+        th_player: "Jugador",
+        th_country: "País",
+        th_score: "Puntuación",
+        feat_title: "Características del Juego",
+        feat_subtitle: "Una experiencia completa con diseño moderno y sonido inmersivo.",
+        f1_title: "Modo Aventura",
+        f1_desc: "Avanza por decenas de niveles con objetivos desafiantes.",
+        f2_title: "Modo Clásico",
+        f2_desc: "La experiencia sin límite de tiempo para relajarse y superar tu récord.",
+        f3_title: "Ránking Nacional y Global",
+        f3_desc: "Compite en tiempo real representando a tu país.",
+        f4_title: "Visuales y Efectos Neon",
+        f4_desc: "Explosiones de partículas fluidas y música relajante.",
+        footer_desc: "El juego definitivo de estrategia de bloques para Web y Android.",
+        footer_nav: "Navegación",
+        footer_legal: "Legal",
+        footer_rights: "Todos los derechos reservados.",
+        footer_tag: "Hecho con pasión para todas las edades."
+      },
+      fr: {
+        nav_play: "Jouer en Ligne",
+        nav_ranking: "Classement",
+        nav_features: "Fonctionnalités",
+        nav_privacy: "Politique de Confidentialité",
+        btn_play_header: "▶ Jouer",
+        hero_badge: "Le Puzzle le Plus Addictif de 2026",
+        hero_highlight: "Classement Mondial !",
+        hero_desc: "Défiez votre esprit et battez-vous pour les premières places mondiales en direct.",
+        btn_play_now: "Jouer sur Navigateur",
+        btn_play_browser: "Jouer sur Navigateur",
+        store_sub: "Disponible sur",
+        art_sub: "Web & Mobile Officiel",
+        game_title: "🎮 Jouez à BLOCK",
+        game_subtitle: "Directement dans votre navigateur ! Sans aucun téléchargement.",
+        status_online: "Version Web 100% en Ligne",
+        fs_btn: "Plein Écran",
+        ranking_title: "Classement en Temps Réel",
+        ranking_subtitle: "Scores officiels synchronisés avec la base de données.",
+        tab_global: "🌍 Mondial",
+        tab_national: "🇧🇷 National",
+        th_rank: "Rang",
+        th_player: "Joueur",
+        th_country: "Pays",
+        th_score: "Score",
+        feat_title: "Fonctionnalités",
+        feat_subtitle: "Une expérience complète avec une esthétique moderne et un son immersif.",
+        f1_title: "Mode Aventure",
+        f1_desc: "Terminez des dizaines de niveaux palpitants.",
+        f2_title: "Mode Classique",
+        f2_desc: "Détendez-vous sans pression de temps.",
+        f3_title: "Classement National & Mondial",
+        f3_desc: "Défendez les couleurs de votre pays.",
+        f4_title: "Effets Visuels & Sonores",
+        f4_desc: "Des effets éclatants et une ambiance sonore soignée.",
+        footer_desc: "Le jeu de puzzle de blocs ultime pour Web et Android.",
+        footer_nav: "Navigation",
+        footer_legal: "Légal",
+        footer_rights: "Tous droits réservés.",
+        footer_tag: "Conçu avec passion pour tous les âges."
+      },
+      ru: {
+        nav_play: "Играть Онлайн",
+        nav_ranking: "Рейтинг",
+        nav_features: "Особенности",
+        nav_privacy: "Конфиденциальность",
+        btn_play_header: "▶ Играть",
+        hero_badge: "Самая увлекательная головоломка 2026",
+        hero_highlight: "Мировой Рейтинг!",
+        hero_desc: "Развивайте мышление с уровнями и соревнуйтесь в реальном времени.",
+        btn_play_now: "Играть в браузере",
+        btn_play_browser: "Играть в браузере",
+        store_sub: "Доступно в",
+        art_sub: "Официальная Web и Mobile версия",
+        game_title: "🎮 Играйте в BLOCK",
+        game_subtitle: "Прямо в браузере! Без скачивания и установки.",
+        status_online: "Web-версия 100% Онлайн",
+        fs_btn: "Во весь экран",
+        ranking_title: "Таблица лидеров в реальном времени",
+        ranking_subtitle: "Официальные рекорды базы данных.",
+        tab_global: "🌍 Мировой",
+        tab_national: "🇧🇷 Национальный",
+        th_rank: "Место",
+        th_player: "Игрок",
+        th_country: "Страна",
+        th_score: "Очки",
+        feat_title: "Особенности игры",
+        feat_subtitle: "Современная графика и приятная музыка.",
+        f1_title: "Режим Приключения",
+        f1_desc: "Десятки уровней с уникальными целями.",
+        f2_title: "Классический Режим",
+        f2_desc: "Бесконечная игра без таймера для рекордов.",
+        f3_title: "Рейтинг стран и мира",
+        f3_desc: "Соревнуйтесь под флагом своей страны.",
+        f4_title: "Неоновые Эффекты",
+        f4_desc: "Сочные взрывы линий и частиц.",
+        footer_desc: "Лучшая блочная головоломка для Web и Android.",
+        footer_nav: "Навигация",
+        footer_legal: "Правовая информация",
+        footer_rights: "Все права защищены.",
+        footer_tag: "Сделано с душой для игроков всех возрастов."
+      },
+      ja: {
+        nav_play: "オンラインで遊ぶ",
+        nav_ranking: "ランキング",
+        nav_features: "特徴",
+        nav_privacy: "利用規約",
+        btn_play_header: "▶ プレイ",
+        hero_badge: "2026年最高のブロックパズル",
+        hero_highlight: "世界ランキング！",
+        hero_desc: "戦略的ステージとリアルタイムの世界ランキングで競い合おう。",
+        btn_play_now: "ブラウザで遊ぶ",
+        btn_play_browser: "ブラウザで遊ぶ",
+        store_sub: "配信中",
+        art_sub: "公式 Web & スマホ版",
+        game_title: "🎮 今すぐBLOCKをプレイ",
+        game_subtitle: "ブラウザですぐに遊べる！ダウンロード不要。",
+        status_online: "Web版 100% オンライン",
+        fs_btn: "全画面",
+        ranking_title: "リアルタイムランキング",
+        ranking_subtitle: "公式データベース同期済みスコア。",
+        tab_global: "🌍 世界",
+        tab_national: "🇧🇷 国内",
+        th_rank: "順位",
+        th_player: "プレイヤー",
+        th_country: "国",
+        th_score: "スコア",
+        feat_title: "ゲームの特徴",
+        feat_subtitle: "美しい演出と心地よいサウンド。",
+        f1_title: "アドベンチャー",
+        f1_desc: "数多くのチャレンジステージを攻略。",
+        f2_title: "クラシック",
+        f2_desc: "時間制限なしでじっくり遊べるモード。",
+        f3_title: "国別＆世界ランキング",
+        f3_desc: "世界のライバルとハイスコアを競おう。",
+        f4_title: "ネオン演出とBGM",
+        f4_desc: "爽快なエフェクトとリラックスサウンド。",
+        footer_desc: "WebおよびAndroid向け究極のブロックパズル。",
+        footer_nav: "ナビゲーション",
+        footer_legal: "規約",
+        footer_rights: "無断転載を禁じます。",
+        footer_tag: "すべての年代のプレイヤーへ。"
+      },
+      zh: {
+        nav_play: "在线畅玩",
+        nav_ranking: "排行榜",
+        nav_features: "特色亮点",
+        nav_privacy: "隐私政策",
+        btn_play_header: "▶ 立即开玩",
+        hero_badge: "2026年最令人上瘾的方块消除",
+        hero_highlight: "全球排行榜！",
+        hero_desc: "挑战思维关卡，与全球玩家实时竞技。",
+        btn_play_now: "在网页端游玩",
+        btn_play_browser: "在网页端游玩",
+        store_sub: "下载平台",
+        art_sub: "官方 Web 与移动端",
+        game_title: "🎮 立即畅玩 BLOCK",
+        game_subtitle: "网页端免安装！点击即刻享受完整体验。",
+        status_online: "网页版 100% 在线",
+        fs_btn: "全屏模式",
+        ranking_title: "实时排行榜",
+        ranking_subtitle: "与游戏数据库实时同步的高分榜单。",
+        tab_global: "🌍 全球",
+        tab_national: "🇧🇷 国家",
+        th_rank: "排名",
+        th_player: "玩家",
+        th_country: "国家",
+        th_score: "得分",
+        feat_title: "游戏特色",
+        feat_subtitle: "现代视觉美学与沉浸式音效打造。",
+        f1_title: "冒险模式",
+        f1_desc: "探索数十个精彩独特的挑战关卡。",
+        f2_title: "经典模式",
+        f2_desc: "无时间限制的无限消除体验。",
+        f3_title: "国家与全球排行",
+        f3_desc: "代表国家荣誉，角逐世界榜首。",
+        f4_title: "霓虹爆破特效",
+        f4_desc: "丝滑粒子爆炸与解压音效。",
+        footer_desc: "专为网页与 Android 打造的终极方块益智游戏。",
+        footer_nav: "导航",
+        footer_legal: "法律信息",
+        footer_rights: "保留所有权利。",
+        footer_tag: "用心为全年龄段玩家打造。"
+      }
+    };
+
+    const flagMap = {
+      pt: { flag: '🇧🇷', name: 'PT' },
+      en: { flag: '🇺🇸', name: 'EN' },
+      es: { flag: '🇪🇸', name: 'ES' },
+      fr: { flag: '🇫🇷', name: 'FR' },
+      ru: { flag: '🇷🇺', name: 'RU' },
+      ja: { flag: '🇯🇵', name: 'JA' },
+      zh: { flag: '🇨🇳', name: 'ZH' }
+    };
+
+    function toggleLangMenu() {
+      document.getElementById('langMenu').classList.toggle('show');
+    }
+
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.lang-dropdown')) {
+        document.getElementById('langMenu').classList.remove('show');
+      }
+    });
+
+    function setLanguage(lang) {
+      if (!translations[lang]) return;
+      document.getElementById('currentLangFlag').innerText = flagMap[lang].flag;
+      document.getElementById('currentLangName').innerText = flagMap[lang].name;
+      document.getElementById('langMenu').classList.remove('show');
+
+      document.querySelectorAll('.lang-item').forEach(el => {
+        if (el.innerText.includes(flagMap[lang].flag)) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.innerText = translations[lang][key];
+        }
+      });
+    }
+
+    // 2. Fullscreen
+    function toggleFullscreen() {
+      const el = document.getElementById('gameViewport');
+      if (!document.fullscreenElement) {
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // 3. Supabase Real-time Ranking
+    const SUPABASE_URL = "https://fppunjtazruafwydlegq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ZrZ8fEGr0AuTLpgxnaAMlQ_qpbPbcw1";
+    let supabaseClient = null;
+
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+
+    const countryFlags = {
+      'BR': '🇧🇷', 'US': '🇺🇸', 'ES': '🇪🇸', 'FR': '🇫🇷', 'RU': '🇷🇺', 
+      'JP': '🇯🇵', 'CN': '🇨🇳', 'DE': '🇩🇪', 'IT': '🇮🇹', 'GB': '🇬🇧', 
+      'PT': '🇵🇹', 'AR': '🇦🇷', 'MX': '🇲🇽', 'CA': '🇨🇦'
+    };
+
+    async function loadRanking(type = 'global') {
+      const tbody = document.getElementById('rankingBody');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 30px;">Carregando classificação em tempo real...</td></tr>';
+
+      let scores = [];
+      try {
+        if (supabaseClient) {
+          try {
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            if (!sessionData || !sessionData.session) {
+              await supabaseClient.auth.signInAnonymously();
+            }
+          } catch (authErr) {
+            console.warn('Auth anonima:', authErr);
+          }
+
+          const targetCountry = (type === 'national') ? 'BR' : null;
+          const { data, error } = await supabaseClient.rpc('get_top_scores', {
+            p_mode: 'classic',
+            p_country_code: targetCountry,
+            p_limit: 50
+          });
+
+          if (!error && Array.isArray(data)) {
+            scores = data;
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao consultar Supabase:', err);
+      }
+
+      if (scores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">Nenhum recorde registrado ainda. Seja o primeiro a jogar e garantir seu lugar no topo do ranking! 🚀</td></tr>';
+        return;
+      }
+
+      let html = '';
+      scores.forEach((item, index) => {
+        const rank = item.rank_pos || (index + 1);
+        let rankClass = '';
+        let medal = '';
+        if (rank === 1) { rankClass = 'pos-1'; medal = '🥇 '; }
+        else if (rank === 2) { rankClass = 'pos-2'; medal = '🥈 '; }
+        else if (rank === 3) { rankClass = 'pos-3'; medal = '🥉 '; }
+
+        const cCode = (item.country_code || item.country || 'BR').toUpperCase();
+        const flag = countryFlags[cCode] || '🌐';
+        const pName = item.nickname || item.player_name || 'Jogador';
+        const scoreVal = item.score || 0;
+
+        html += `
+          <tr>
+            <td><div class="pos-tag ${rankClass}">${medal}#${rank}</div></td>
+            <td>
+              <div class="player-box">
+                <span class="flag-ico">${flag}</span>
+                <span>${pName}</span>
+              </div>
+            </td>
+            <td>${cCode}</td>
+            <td><div class="score-txt">${scoreVal.toLocaleString()} pts</div></td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function switchRanking(type) {
+      if (type === 'global') {
+        document.getElementById('tabGlobal').classList.add('active');
+        document.getElementById('tabNational').classList.remove('active');
+      } else {
+        document.getElementById('tabNational').classList.add('active');
+        document.getElementById('tabGlobal').classList.remove('active');
+      }
+      loadRanking(type);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRanking('global');
+    });
+  </script>
 </body>
 </html>
