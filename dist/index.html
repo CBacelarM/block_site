@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLOCK</title>
+  <meta name="description"
+    content="Jogue BLOCK online no navegador ou no seu celular Android. Quebra-cabeça viciante, modo aventura e ranking mundial." />
+
+  <link rel="icon" type="image/png" href="/assets/icon-512-H1Zhq5F2.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #060813;
+      --surface: #0e1322;
+      --surface-light: #161d33;
+      --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.35);
+      --accent: #f59e0b;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-dim: #8e9bb2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Ambient Game Background */
+    .bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 35%, rgba(139, 92, 246, 0.12), transparent 40%),
+        linear-gradient(to bottom, rgba(6, 8, 19, 0.65), rgba(6, 8, 19, 0.85)),
+        url('/assets/BG_SPACE-La4feEeB.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -2;
+    }
+
+    /* Floating Game Blocks in Background */
+    .floating-asset {
+      position: absolute;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.6;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-18px) rotate(4deg);
+      }
+    }
+
+    .fa-1 {
+      top: 140px;
+      left: 6%;
+      width: 65px;
+      animation-delay: 0s;
+    }
+
+    .fa-2 {
+      top: 220px;
+      right: 8%;
+      width: 75px;
+      animation-delay: 1.5s;
+    }
+
+    .fa-3 {
+      top: 600px;
+      left: 10%;
+      width: 55px;
+      animation-delay: 3s;
+    }
+
+    .fa-4 {
+      top: 850px;
+      right: 12%;
+      width: 60px;
+      animation-delay: 2s;
+    }
+
+    /* Navigation Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(6, 8, 19, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand span {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      margin-right: 8px;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Language Switcher - Mostrar Apenas Bandeira com Seta */
+    .lang-dropdown {
+      position: relative;
+    }
+
+    .lang-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .lang-arrow {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .lang-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+    }
+
+    .lang-menu.show {
+      display: flex;
+    }
+
+    .lang-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+
+    .lang-item:hover,
+    .lang-item.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
+    }
+
+    .lang-item span.emoji-flag {
+      font-size: 18px;
+    }
+
+    .btn-header-play {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      color: #fff !important;
+      padding: 10px 22px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-header-play:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1200px;
+      margin: 40px auto 60px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 20px;
+      letter-spacing: -1.5px;
+    }
+
+    .hero-title span.gradient-text {
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #f43f5e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-main-play {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 30px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-main-play:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.6);
+    }
+
+    .btn-store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #0f1423;
+      border: 1px solid var(--border);
+      padding: 12px 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.2s;
+    }
+
+    .btn-store-badge:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .btn-store-badge svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .store-text-sub {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .store-text-main {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    /* Hero Poster / Banner */
+    .hero-art-card {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .hero-art-card:hover {
+      transform: scale(1.02);
+    }
+
+    .hero-art-img {
+      width: 100%;
+      height: 460px;
+      object-fit: cover;
+      object-position: center 15%;
+      display: block;
+    }
+
+    .hero-art-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 30px 24px 20px;
+      background: linear-gradient(0deg, rgba(6, 8, 19, 0.95) 0%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    /* Game Live Player Section */
+    .game-section {
+      max-width: 1200px;
+      margin: 60px auto 80px;
+      padding: 0 24px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-header p {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    .game-frame-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .game-top-bar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 8px 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .game-status-text {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-fs {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-fs:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--primary);
+    }
+
+    .game-viewport {
+      width: 100%;
+      max-width: 440px;
+      height: 780px;
+      max-height: 85vh;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.2);
+      background: #000;
+    }
+
+    .game-viewport iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Live Ranking Section */
+    .ranking-section {
+      max-width: 1200px;
+      margin: 60px auto 80px;
+      padding: 0 24px;
+    }
+
+    .ranking-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .ranking-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ranking-card-top h3 {
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .ranking-card-top p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .ranking-nav-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #060813;
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      padding: 12px 16px;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      font-size: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .pos-tag {
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .pos-1 {
+      color: #f59e0b;
+    }
+
+    .pos-2 {
+      color: #cbd5e1;
+    }
+
+    .pos-3 {
+      color: #d97706;
+    }
+
+    .player-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .flag-ico {
+      font-size: 20px;
+    }
+
+    .score-txt {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px 30px;
+      background: #04060d;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .footer-brand p {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-top: 10px;
+      max-width: 320px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 40px;
+    }
+
+    .footer-col h4 {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 8px;
+    }
+
+    .footer-col a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    @media (max-width: 868px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-desc {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+
+      .hero-title {
+        font-size: 40px;
+      }
+
+      .hero-art-img {
+        height: 320px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .game-viewport {
+        height: 680px;
+        max-height: 80vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-canvas"></div>
+
+  <!-- Floating Game Graphic Blocks -->
+  <img src="/assets/Cyan-BD9cc7zd.png" class="floating-asset fa-1" alt="Block Cyan">
+  <img src="/assets/Yellow-B3r_Dxeg.png" class="floating-asset fa-2" alt="Block Yellow">
+  <img src="/assets/Purple-Cbxi0oRH.png" class="floating-asset fa-3" alt="Block Purple">
+  <img src="/assets/Red-C4P3AZxh.png" class="floating-asset fa-4" alt="Block Red">
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <img src="/assets/icon-512-H1Zhq5F2.png" alt="BLOCK Logo">
+        <span>BLOCK</span>
+      </a>
+
+      <div class="nav-actions">
+        <div class="nav-links">
+          <a href="#jogar" data-i18n="nav_play">Jogar Online</a>
+          <a href="#ranking" data-i18n="nav_ranking">Ranking</a>
+        </div>
+
+        <!-- Language Selector: Apenas Bandeiras com Seta -->
+        <div class="lang-dropdown">
+          <button class="lang-btn" id="langBtn" onclick="toggleLangMenu()">
+            <span id="currentLangFlag">🇧🇷</span>
+            <span class="lang-arrow">▾</span>
+          </button>
+          <div class="lang-menu" id="langMenu">
+            <div class="lang-item active" onclick="setLanguage('pt')">
+              <span class="emoji-flag">🇧🇷</span> <span>Português</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('en')">
+              <span class="emoji-flag">🇺🇸</span> <span>English</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('es')">
+              <span class="emoji-flag">🇪🇸</span> <span>Español</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('fr')">
+              <span class="emoji-flag">🇫🇷</span> <span>Français</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('ru')">
+              <span class="emoji-flag">🇷🇺</span> <span>Русский</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('ja')">
+              <span class="emoji-flag">🇯🇵</span> <span>日本語</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('zh')">
+              <span class="emoji-flag">🇨🇳</span> <span>简体中文</span>
+            </div>
+          </div>
+        </div>
+
+        <a href="#jogar" class="btn-header-play" data-i18n="btn_play_header">▶ Jogar</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge" data-i18n="hero_badge">O Quebra-Cabeça Mais Viciante de 2026</div>
+      <h1 class="hero-title"><span data-i18n="hero_title_lead">Encaixe, exploda e domine o</span> <span
+          class="gradient-text" data-i18n="hero_highlight">Ranking Mundial!</span></h1>
+      <p class="hero-desc" data-i18n="hero_desc">Desafie seu raciocínio com fases estratégicas, combos eletrizantes e
+        dispute as primeiras posições da tabela de líderes em tempo real.</p>
+
+      <div class="hero-buttons">
+        <a href="#jogar" class="btn-main-play" data-i18n="btn_play_now">
+          <span>🎮</span> <span data-i18n="btn_play_browser">Jogar no Navegador</span>
+        </a>
+        <a href="#jogar" class="btn-store-badge">
+          <svg viewBox="0 0 512 512">
+            <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z" />
+            <path fill="#34A853" d="M47 0C34 6.8 24 20.6 24 37v438c0 16.4 10 30.2 23 37l244-241L47 0z" />
+            <path fill="#FBBC04" d="M325.3 277.7l60.1 60.1L104.6 499l220.7-221.3z" />
+            <path fill="#EA4335" d="M385.4 337.8l93.7-53.8c17.5-10 17.5-26.2 0-36.2l-93.7-53.8-60.1 60.1 60.1 83.7z" />
+          </svg>
+          <div>
+            <div class="store-text-sub" data-i18n="store_sub">Disponível no</div>
+            <div class="store-text-main">Google Play</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-art-card">
+        <img src="/assets/menuInicial-Dn5rugRq.jpeg" alt="BLOCK Artwork" class="hero-art-img">
+        <div class="hero-art-overlay">
+          <div>
+            <div style="font-weight: 900; font-size: 18px; color: #fff;" data-i18n="art_title">BLOCK: Estratégia e
+              Quebra-Cabeça</div>
+            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web e Mobile
+              Oficial</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Web Game Section -->
+  <section class="game-section" id="jogar">
+    <div class="section-header">
+      <h2 data-i18n="game_title">🎮 Jogue BLOCK Agora</h2>
+      <p data-i18n="game_subtitle">Direto no seu navegador! Carregamento rápido sem precisar baixar nada.</p>
+    </div>
+
+    <div class="game-frame-box">
+      <div class="game-top-bar">
+        <div class="game-status-text">
+          <span data-i18n="status_online">Versão Web 100% Online</span>
+        </div>
+        <button class="btn-fs" onclick="toggleFullscreen()">
+          <span>⛶</span> <span data-i18n="fs_btn">Tela Cheia</span>
+        </button>
+      </div>
+
+      <div class="game-viewport" id="gameViewport">
+        <iframe src="/play/index.html" id="gameFrame" title="BLOCK Game" allow="autoplay; fullscreen"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Ranking Section -->
+  <section class="ranking-section" id="ranking">
+    <div class="ranking-card">
+      <div class="ranking-card-top">
+        <div>
+          <h3><span>🏆</span> <span data-i18n="ranking_title">Quadro de Líderes em Tempo Real</span></h3>
+          <p data-i18n="ranking_subtitle">Recordes oficiais sincronizados com o banco de dados do jogo.</p>
+        </div>
+        <div class="ranking-nav-tabs">
+          <button class="tab-btn active" id="tabGlobal" onclick="switchRanking('global')" data-i18n="tab_global">🌍
+            Global</button>
+          <button class="tab-btn" id="tabNational" onclick="switchRanking('national')" data-i18n="tab_national">🇧🇷
+            Nacional</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="th_rank">Posição</th>
+              <th data-i18n="th_player">Jogador</th>
+              <th data-i18n="th_country">País</th>
+              <th data-i18n="th_score">Pontuação</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;"
+                data-i18n="ranking_connecting">
+                Conectando ao banco de dados oficial...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="brand">
+          <img src="/assets/icon-512-H1Zhq5F2.png" alt="BLOCK Logo">
+          <span>BLOCK</span>
+        </a>
+        <p data-i18n="footer_desc">O quebra-cabeça definitivo de estratégia para Web e Android.</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4 data-i18n="footer_nav">Navegação</h4>
+          <ul>
+            <li><a href="#jogar" data-i18n="nav_play">Jogar Online</a></li>
+            <li><a href="#ranking" data-i18n="nav_ranking">Ranking</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 data-i18n="footer_legal">Legal</h4>
+          <ul>
+            <li><a href="privacy.html" data-i18n="nav_privacy">Política de Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 BLOCK. <span data-i18n="footer_rights">Todos os direitos reservados.</span></div>
+      <div data-i18n="footer_tag">Feito com paixão para jogadores de todas as idades.</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // 1. Translations completas em todos os 7 idiomas
+    const translations = {
+      pt: {
+        nav_play: "Jogar Online",
+        nav_ranking: "Ranking",
+        nav_privacy: "Política de Privacidade",
+        btn_play_header: "▶ Jogar",
+        hero_badge: "O Quebra-Cabeça Mais Viciante de 2026",
+        hero_title_lead: "Encaixe, exploda e domine o",
+        hero_highlight: "Ranking Mundial!",
+        hero_desc: "Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.",
+        btn_play_now: "Jogar no Navegador",
+        btn_play_browser: "Jogar no Navegador",
+        store_sub: "Disponível no",
+        art_title: "BLOCK: Estratégia e Quebra-Cabeça",
+        art_sub: "Web e Mobile Oficial",
+        game_title: "🎮 Jogue BLOCK Agora",
+        game_subtitle: "Direto no seu navegador! Carregamento rápido sem precisar baixar nada.",
+        status_online: "Versão Web 100% Online",
+        fs_btn: "Tela Cheia",
+        ranking_title: "Quadro de Líderes em Tempo Real",
+        ranking_subtitle: "Recordes oficiais sincronizados com o banco de dados do jogo.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 Nacional",
+        th_rank: "Posição",
+        th_player: "Jogador",
+        th_country: "País",
+        th_score: "Pontuação",
+        ranking_connecting: "Conectando ao banco de dados oficial...",
+        ranking_empty: "Nenhum recorde registrado ainda. Seja o primeiro a jogar e garantir seu lugar no topo do ranking! 🚀",
+        footer_desc: "O quebra-cabeça definitivo de estratégia para Web e Android.",
+        footer_nav: "Navegação",
+        footer_legal: "Legal",
+        footer_rights: "Todos os direitos reservados.",
+        footer_tag: "Feito com paixão para jogadores de todas as idades."
+      },
+      en: {
+        nav_play: "Play Online",
+        nav_ranking: "Leaderboard",
+        nav_privacy: "Privacy Policy",
+        btn_play_header: "▶ Play",
+        hero_badge: "The Most Addictive Puzzle of 2026",
+        hero_title_lead: "Fit, blast and dominate the",
+        hero_highlight: "Global Leaderboard!",
+        hero_desc: "Challenge your mind with strategic levels, electrifying combos, and compete for top ranks in real time.",
+        btn_play_now: "Play in Browser",
+        btn_play_browser: "Play in Browser",
+        store_sub: "Get it on",
+        art_title: "BLOCK: Strategy & Puzzle",
+        art_sub: "Official Web & Mobile",
+        game_title: "🎮 Play BLOCK Now",
+        game_subtitle: "Right in your browser! Fast loading with zero downloads required.",
+        status_online: "100% Online Web Version",
+        fs_btn: "Fullscreen",
+        ranking_title: "Real-Time Leaderboard",
+        ranking_subtitle: "Official high scores synced with game database.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 National",
+        th_rank: "Rank",
+        th_player: "Player",
+        th_country: "Country",
+        th_score: "Score",
+        ranking_connecting: "Connecting to official database...",
+        ranking_empty: "No high scores registered yet. Be the first to play and claim top rank! 🚀",
+        footer_desc: "The ultimate block puzzle strategy game for Web and Android.",
+        footer_nav: "Navigation",
+        footer_legal: "Legal",
+        footer_rights: "All rights reserved.",
+        footer_tag: "Crafted with passion for players of all ages."
+      },
+      es: {
+        nav_play: "Jugar Online",
+        nav_ranking: "Clasificación",
+        nav_privacy: "Política de Privacidad",
+        btn_play_header: "▶ Jugar",
+        hero_badge: "El Rompecabezas Más Adictivo de 2026",
+        hero_title_lead: "Encaja, explota y domina el",
+        hero_highlight: "¡Ránking Mundial!",
+        hero_desc: "Desafía tu mente con niveles estratégicos y compite por los primeros puestos en tiempo real.",
+        btn_play_now: "Jugar en Navegador",
+        btn_play_browser: "Jugar en Navegador",
+        store_sub: "Disponible en",
+        art_title: "BLOCK: Estrategia y Rompecabezas",
+        art_sub: "Web y Móvil Oficial",
+        game_title: "🎮 Juega a BLOCK Ahora",
+        game_subtitle: "¡En tu navegador! Carga rápida sin necesidad de descargas.",
+        status_online: "Versión Web 100% Online",
+        fs_btn: "Pantalla Completa",
+        ranking_title: "Tabla de Líderes en Tiempo Real",
+        ranking_subtitle: "Puntuaciones oficiales sincronizadas con la base de datos.",
+        tab_global: "🌍 Global",
+        tab_national: "🇧🇷 Nacional",
+        th_rank: "Puesto",
+        th_player: "Jugador",
+        th_country: "País",
+        th_score: "Puntuación",
+        ranking_connecting: "Conectando a la base de datos oficial...",
+        ranking_empty: "Aún no hay puntuaciones registradas. ¡Sé el primero en jugar! 🚀",
+        footer_desc: "El juego definitivo de estrategia de bloques para Web y Android.",
+        footer_nav: "Navegación",
+        footer_legal: "Legal",
+        footer_rights: "Todos los derechos reservados.",
+        footer_tag: "Hecho con pasión para todas las edades."
+      },
+      fr: {
+        nav_play: "Jouer en Ligne",
+        nav_ranking: "Classement",
+        nav_privacy: "Politique de Confidentialité",
+        btn_play_header: "▶ Jouer",
+        hero_badge: "Le Puzzle le Plus Addictif de 2026",
+        hero_title_lead: "Emboîtez, explosez et dominez le",
+        hero_highlight: "Classement Mondial !",
+        hero_desc: "Défiez votre esprit et battez-vous pour les premières places mondiales en direct.",
+        btn_play_now: "Jouer sur Navigateur",
+        btn_play_browser: "Jouer sur Navigateur",
+        store_sub: "Disponible sur",
+        art_title: "BLOCK: Stratégie et Puzzle",
+        art_sub: "Web et Mobile Officiel",
+        game_title: "🎮 Jouez à BLOCK",
+        game_subtitle: "Directement dans votre navigateur ! Sans aucun téléchargement.",
+        status_online: "Version Web 100% en Ligne",
+        fs_btn: "Plein Écran",
+        ranking_title: "Classement en Temps Réel",
+        ranking_subtitle: "Scores officiels synchronisés avec la base de données.",
+        tab_global: "🌍 Mondial",
+        tab_national: "🇧🇷 National",
+        th_rank: "Rang",
+        th_player: "Joueur",
+        th_country: "Pays",
+        th_score: "Score",
+        ranking_connecting: "Connexion à la base de données...",
+        ranking_empty: "Aucun score enregistré. Soyez le premier à jouer ! 🚀",
+        footer_desc: "Le jeu de puzzle de blocs ultime pour Web et Android.",
+        footer_nav: "Navigation",
+        footer_legal: "Légal",
+        footer_rights: "Tous droits réservés.",
+        footer_tag: "Conçu avec passion pour tous les âges."
+      },
+      ru: {
+        nav_play: "Играть Онлайн",
+        nav_ranking: "Рейтинг",
+        nav_privacy: "Конфиденциальность",
+        btn_play_header: "▶ Играть",
+        hero_badge: "Самая увлекательная головоломка 2026",
+        hero_title_lead: "Собирайте, взрывайте и покоряйте",
+        hero_highlight: "Мировой Рейтинг!",
+        hero_desc: "Развивайте мышление с уровнями и соревнуйтесь в реальном времени.",
+        btn_play_now: "Играть в браузере",
+        btn_play_browser: "Играть в браузере",
+        store_sub: "Доступно в",
+        art_title: "BLOCK: Стратегия и Головоломка",
+        art_sub: "Официальная Web и Mobile версия",
+        game_title: "🎮 Играйте в BLOCK",
+        game_subtitle: "Прямо в браузере! Без скачивания и установки.",
+        status_online: "Web-версия 100% Онлайн",
+        fs_btn: "Во весь экран",
+        ranking_title: "Таблица лидеров в реальном времени",
+        ranking_subtitle: "Официальные рекорды базы данных.",
+        tab_global: "🌍 Мировой",
+        tab_national: "🇧🇷 Национальный",
+        th_rank: "Место",
+        th_player: "Игрок",
+        th_country: "Страна",
+        th_score: "Очки",
+        ranking_connecting: "Подключение к базе данных...",
+        ranking_empty: "Рекордов пока нет. Будьте первым! 🚀",
+        footer_desc: "Лучшая блочная головоломка для Web и Android.",
+        footer_nav: "Навигация",
+        footer_legal: "Правовая информация",
+        footer_rights: "Все права защищены.",
+        footer_tag: "Сделано с душой для игроков всех возрастов."
+      },
+      ja: {
+        nav_play: "オンラインで遊ぶ",
+        nav_ranking: "ランキング",
+        nav_privacy: "利用規約",
+        btn_play_header: "▶ プレイ",
+        hero_badge: "2026年最高のブロックパズル",
+        hero_title_lead: "ブロックを消して制覇しよう",
+        hero_highlight: "世界ランキング！",
+        hero_desc: "戦略的ステージとリアルタイムの世界ランキングで競い合おう。",
+        btn_play_now: "ブラウザで遊ぶ",
+        btn_play_browser: "ブラウザで遊ぶ",
+        store_sub: "配信中",
+        art_title: "BLOCK: 戦略パズル",
+        art_sub: "公式 Web & スマホ版",
+        game_title: "🎮 今すぐBLOCKをプレイ",
+        game_subtitle: "ブラウザですぐに遊べる！ダウンロード不要。",
+        status_online: "Web版 100% オンライン",
+        fs_btn: "全画面",
+        ranking_title: "リアルタイムランキング",
+        ranking_subtitle: "公式データベース同期済みスコア。",
+        tab_global: "🌍 世界",
+        tab_national: "🇧🇷 国内",
+        th_rank: "順位",
+        th_player: "プレイヤー",
+        th_country: "国",
+        th_score: "スコア",
+        ranking_connecting: "データベースに接続中...",
+        ranking_empty: "記録はまだありません。最初のプレイヤーになろう！ 🚀",
+        footer_desc: "WebおよびAndroid向け究極のブロックパズル。",
+        footer_nav: "ナビゲーション",
+        footer_legal: "規約",
+        footer_rights: "無断転載を禁じます。",
+        footer_tag: "すべての年代のプレイヤーへ。"
+      },
+      zh: {
+        nav_play: "在线畅玩",
+        nav_ranking: "排行榜",
+        nav_privacy: "隐私政策",
+        btn_play_header: "▶ 立即开玩",
+        hero_badge: "2026年最令人上瘾的方块消除",
+        hero_title_lead: "拼合、消除并制霸",
+        hero_highlight: "全球排行榜！",
+        hero_desc: "挑战思维关卡，与全球玩家实时竞技。",
+        btn_play_now: "在网页端游玩",
+        btn_play_browser: "在网页端游玩",
+        store_sub: "下载平台",
+        art_title: "BLOCK: 策略与益智消除",
+        art_sub: "官方 Web 与移动端",
+        game_title: "🎮 立即畅玩 BLOCK",
+        game_subtitle: "网页端免安装！点击即刻享受完整体验。",
+        status_online: "网页版 100% 在线",
+        fs_btn: "全屏模式",
+        ranking_title: "实时排行榜",
+        ranking_subtitle: "与游戏数据库实时同步的高分榜单。",
+        tab_global: "🌍 全球",
+        tab_national: "🇧🇷 国家",
+        th_rank: "排名",
+        th_player: "玩家",
+        th_country: "国家",
+        th_score: "得分",
+        ranking_connecting: "正在连接官方数据库...",
+        ranking_empty: "暂无记录。快来成为第一位登榜玩家吧！ 🚀",
+        footer_desc: "专为网页与 Android 打造的终极方块益智游戏。",
+        footer_nav: "导航",
+        footer_legal: "法律信息",
+        footer_rights: "保留所有权利。",
+        footer_tag: "用心为全年龄段玩家打造。"
+      }
+    };
+
+    const flagMap = {
+      pt: '🇧🇷',
+      en: '🇺🇸',
+      es: '🇪🇸',
+      fr: '🇫🇷',
+      ru: '🇷🇺',
+      ja: '🇯🇵',
+      zh: '🇨🇳'
+    };
+
+    let currentLang = 'pt';
+
+    function toggleLangMenu() {
+      document.getElementById('langMenu').classList.toggle('show');
+    }
+
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.lang-dropdown')) {
+        document.getElementById('langMenu').classList.remove('show');
+      }
+    });
+
+    function setLanguage(lang) {
+      if (!translations[lang]) return;
+      currentLang = lang;
+      document.getElementById('currentLangFlag').innerText = flagMap[lang];
+      document.getElementById('langMenu').classList.remove('show');
+
+      document.querySelectorAll('.lang-item').forEach(el => {
+        if (el.innerText.includes(flagMap[lang])) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      // Atualiza todos os textos com data-i18n no site
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.innerText = translations[lang][key];
+        }
+      });
+
+      // Recarrega o ranking caso esteja no estado vazio ou carregando para traduzir a mensagem
+      loadRanking(currentRankingType);
+    }
+
+    // 2. Fullscreen
+    function toggleFullscreen() {
+      const el = document.getElementById('gameViewport');
+      if (!document.fullscreenElement) {
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // 3. Supabase Real-time Ranking
+    const SUPABASE_URL = "https://fppunjtazruafwydlegq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ZrZ8fEGr0AuTLpgxnaAMlQ_qpbPbcw1";
+    let supabaseClient = null;
+
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+
+    const countryFlags = {
+      'BR': '🇧🇷', 'US': '🇺🇸', 'ES': '🇪🇸', 'FR': '🇫🇷', 'RU': '🇷🇺',
+      'JP': '🇯🇵', 'CN': '🇨🇳', 'DE': '🇩🇪', 'IT': '🇮🇹', 'GB': '🇬🇧',
+      'PT': '🇵🇹', 'AR': '🇦🇷', 'MX': '🇲🇽', 'CA': '🇨🇦'
+    };
+
+    let currentRankingType = 'global';
+
+    async function loadRanking(type = 'global') {
+      currentRankingType = type;
+      const tbody = document.getElementById('rankingBody');
+      const t = translations[currentLang] || translations.pt;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 30px;">${t.ranking_connecting}</td></tr>`;
+
+      let scores = [];
+      try {
+        if (supabaseClient) {
+          try {
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            if (!sessionData || !sessionData.session) {
+              await supabaseClient.auth.signInAnonymously();
+            }
+          } catch (authErr) {
+            console.warn('Auth anonima:', authErr);
+          }
+
+          const targetCountry = (type === 'national') ? 'BR' : null;
+
+          // 1. Consulta RPC get_top_scores
+          const { data, error } = await supabaseClient.rpc('get_top_scores', {
+            p_mode: 'CLASSIC',
+            p_country_code: targetCountry,
+            p_limit: 100
+          });
+
+          if (!error && Array.isArray(data) && data.length > 0) {
+            scores = data;
+          } else {
+            // 2. Fallback direto na tabela scores caso a RPC esteja em manutenção
+            let query = supabaseClient
+              .from('scores')
+              .select('id, player_id, score, level, country_code, platform, created_at, players(nickname, country_code)')
+              .order('score', { ascending: false })
+              .limit(100);
+
+            if (targetCountry) {
+              query = query.eq('country_code', targetCountry);
+            }
+            const { data: directData, error: directErr } = await query;
+            if (!directErr && Array.isArray(directData) && directData.length > 0) {
+              scores = directData.map((d, i) => ({
+                rank_pos: i + 1,
+                player_id: d.player_id,
+                nickname: d.players?.nickname || 'Jogador',
+                score: d.score,
+                level: d.level,
+                country_code: d.country_code || d.players?.country_code || 'BR',
+                platform: d.platform || 'web'
+              }));
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao consultar Supabase:', err);
+      }
+
+      if (scores.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">${t.ranking_empty}</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      scores.forEach((item, index) => {
+        const rank = item.rank_pos || (index + 1);
+        let rankClass = '';
+        let medal = '';
+        if (rank === 1) { rankClass = 'pos-1'; medal = '🥇 '; }
+        else if (rank === 2) { rankClass = 'pos-2'; medal = '🥈 '; }
+        else if (rank === 3) { rankClass = 'pos-3'; medal = '🥉 '; }
+
+        const cCode = (item.country_code || item.country || 'BR').toUpperCase();
+        const flag = countryFlags[cCode] || '🌐';
+        const pName = item.nickname || item.player_name || 'Jogador';
+        const scoreVal = item.score || 0;
+
+        html += `
+          <tr>
+            <td><div class="pos-tag ${rankClass}">${medal}#${rank}</div></td>
+            <td>
+              <div class="player-box">
+                <span class="flag-ico">${flag}</span>
+                <span>${pName}</span>
+              </div>
+            </td>
+            <td>${cCode}</td>
+            <td><div class="score-txt">${scoreVal.toLocaleString()} pts</div></td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function switchRanking(type) {
+      if (type === 'global') {
+        document.getElementById('tabGlobal').classList.add('active');
+        document.getElementById('tabNational').classList.remove('active');
+      } else {
+        document.getElementById('tabNational').classList.add('active');
+        document.getElementById('tabGlobal').classList.remove('active');
+      }
+      loadRanking(type);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Limpa qualquer hash de âncora para garantir que o reload fique no topo
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname);
+      }
+      window.scrollTo(0, 0);
+      loadRanking('global');
+    });
+  </script>
+</body>
+
+</html>
