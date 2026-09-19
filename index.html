@@ -125,24 +125,24 @@
     }
     .nav-links a:hover { color: var(--primary); }
 
-    /* Language Switcher */
+    /* Language Switcher - Mostrar Apenas Bandeira com Seta */
     .lang-dropdown { position: relative; }
     .lang-btn {
       background: var(--surface);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 10px;
       font-family: inherit;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 18px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: border-color 0.2s;
     }
     .lang-btn:hover { border-color: var(--primary); }
+    .lang-arrow { font-size: 11px; color: var(--text-dim); }
     .lang-menu {
       position: absolute;
       right: 0;
@@ -154,7 +154,7 @@
       display: none;
       flex-direction: column;
       gap: 4px;
-      min-width: 150px;
+      min-width: 160px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       z-index: 1000;
     }
@@ -164,17 +164,18 @@
       border-radius: 8px;
       color: var(--text-dim);
       cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       transition: all 0.15s;
     }
     .lang-item:hover, .lang-item.active {
       background: rgba(56, 189, 248, 0.15);
       color: var(--primary);
     }
+    .lang-item span.emoji-flag { font-size: 18px; }
 
     .btn-header-play {
       background: linear-gradient(135deg, #38bdf8, #2563eb);
@@ -222,7 +223,7 @@
       margin-bottom: 20px;
       letter-spacing: -1.5px;
     }
-    .hero-title span {
+    .hero-title span.gradient-text {
       background: linear-gradient(135deg, #38bdf8, #818cf8, #f43f5e);
       background-clip: text;
       -webkit-background-clip: text;
@@ -291,11 +292,9 @@
     .hero-art-card:hover { transform: scale(1.02); }
     .hero-art-img {
       width: 100%;
-      height: 520px;
-      object-position: center top;
-      padding-top: 15px;
-      object-fit: contain;
-      background: #000;
+      height: 460px;
+      object-fit: cover;
+      object-position: center 15%;
       display: block;
     }
     .hero-art-overlay {
@@ -483,43 +482,6 @@
     .flag-ico { font-size: 20px; }
     .score-txt { font-weight: 800; color: var(--primary); font-size: 16px; }
 
-    /* Highlights / Features Grid */
-    .features-section {
-      max-width: 1200px;
-      margin: 60px auto 80px;
-      padding: 0 24px;
-    }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-    .feature-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .feature-item:hover {
-      transform: translateY(-4px);
-      border-color: rgba(56, 189, 248, 0.3);
-    }
-    .feature-img-box {
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-    .feature-img-box img { width: 34px; height: 34px; object-fit: contain; }
-    .feature-item h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-    .feature-item p { color: var(--text-dim); font-size: 14px; line-height: 1.5; }
-
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
@@ -597,24 +559,36 @@
         <div class="nav-links">
           <a href="#jogar" data-i18n="nav_play">Jogar Online</a>
           <a href="#ranking" data-i18n="nav_ranking">Ranking</a>
-          
         </div>
 
-        <!-- Language Selector -->
+        <!-- Language Selector: Apenas Bandeiras com Seta -->
         <div class="lang-dropdown">
           <button class="lang-btn" id="langBtn" onclick="toggleLangMenu()">
             <span id="currentLangFlag">🇧🇷</span>
-            <span id="currentLangName">PT</span>
-            <span>▾</span>
+            <span class="lang-arrow">▾</span>
           </button>
           <div class="lang-menu" id="langMenu">
-            <div class="lang-item active" onclick="setLanguage('pt')">🇧🇷 Português</div>
-            <div class="lang-item" onclick="setLanguage('en')">🇺🇸 English</div>
-            <div class="lang-item" onclick="setLanguage('es')">🇪🇸 Español</div>
-            <div class="lang-item" onclick="setLanguage('fr')">🇫🇷 Français</div>
-            <div class="lang-item" onclick="setLanguage('ru')">🇷🇺 Русский</div>
-            <div class="lang-item" onclick="setLanguage('ja')">🇯🇵 日本語</div>
-            <div class="lang-item" onclick="setLanguage('zh')">🇨🇳 简体中文</div>
+            <div class="lang-item active" onclick="setLanguage('pt')">
+              <span class="emoji-flag">🇧🇷</span> <span>Português</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('en')">
+              <span class="emoji-flag">🇺🇸</span> <span>English</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('es')">
+              <span class="emoji-flag">🇪🇸</span> <span>Español</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('fr')">
+              <span class="emoji-flag">🇫🇷</span> <span>Français</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('ru')">
+              <span class="emoji-flag">🇷🇺</span> <span>Русский</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('ja')">
+              <span class="emoji-flag">🇯🇵</span> <span>日本語</span>
+            </div>
+            <div class="lang-item" onclick="setLanguage('zh')">
+              <span class="emoji-flag">🇨🇳</span> <span>简体中文</span>
+            </div>
           </div>
         </div>
 
@@ -627,7 +601,7 @@
   <section class="hero">
     <div class="hero-left">
       <div class="hero-badge" data-i18n="hero_badge">O Quebra-Cabeça Mais Viciante de 2026</div>
-      <h1 class="hero-title">Encaixe, exploda e domine o <span data-i18n="hero_highlight">Ranking Mundial!</span></h1>
+      <h1 class="hero-title"><span data-i18n="hero_title_lead">Encaixe, exploda e domine o</span> <span class="gradient-text" data-i18n="hero_highlight">Ranking Mundial!</span></h1>
       <p class="hero-desc" data-i18n="hero_desc">Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.</p>
       
       <div class="hero-buttons">
@@ -651,13 +625,12 @@
 
     <div class="hero-right">
       <div class="hero-art-card">
-        <img src="assets/capaMenu/menuInicial.jpeg" alt="BLOCK Gameplay Artwork" class="hero-art-img">
+        <img src="assets/capaMenu/menuInicial.jpeg" alt="BLOCK Artwork" class="hero-art-img">
         <div class="hero-art-overlay">
           <div>
-            <div style="font-weight: 900; font-size: 18px; color: #fff;">BLOCK: Strategy & Puzzle</div>
-            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web & Mobile Oficial</div>
+            <div style="font-weight: 900; font-size: 18px; color: #fff;" data-i18n="art_title">BLOCK: Estratégia e Quebra-Cabeça</div>
+            <div style="font-size: 13px; color: var(--primary); font-weight: 700;" data-i18n="art_sub">Web e Mobile Oficial</div>
           </div>
-          <span style="font-size: 24px;">⭐ 4.9</span>
         </div>
       </div>
     </div>
@@ -673,7 +646,7 @@
     <div class="game-frame-box">
       <div class="game-top-bar">
         <div class="game-status-text">
-          <span></span> <span data-i18n="status_online">Versão Web 100% Online</span>
+          <span data-i18n="status_online">Versão Web 100% Online</span>
         </div>
         <button class="btn-fs" onclick="toggleFullscreen()">
           <span>⛶</span> <span data-i18n="fs_btn">Tela Cheia</span>
@@ -712,7 +685,7 @@
           </thead>
           <tbody id="rankingBody">
             <tr>
-              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;">
+              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;" data-i18n="ranking_connecting">
                 Conectando ao banco de dados oficial...
               </td>
             </tr>
@@ -721,8 +694,6 @@
       </div>
     </div>
   </section>
-
-  
 
   <!-- Footer -->
   <footer>
@@ -741,7 +712,6 @@
           <ul>
             <li><a href="#jogar" data-i18n="nav_play">Jogar Online</a></li>
             <li><a href="#ranking" data-i18n="nav_ranking">Ranking</a></li>
-            
           </ul>
         </div>
         <div class="footer-col">
@@ -761,21 +731,22 @@
 
   <!-- Scripts -->
   <script>
-    // 1. Translations
+    // 1. Translations completas em todos os 7 idiomas
     const translations = {
       pt: {
         nav_play: "Jogar Online",
         nav_ranking: "Ranking",
-        nav_features: "Recursos",
         nav_privacy: "Política de Privacidade",
         btn_play_header: "▶ Jogar",
         hero_badge: "O Quebra-Cabeça Mais Viciante de 2026",
+        hero_title_lead: "Encaixe, exploda e domine o",
         hero_highlight: "Ranking Mundial!",
         hero_desc: "Desafie seu raciocínio com fases estratégicas, combos eletrizantes e dispute as primeiras posições da tabela de líderes em tempo real.",
         btn_play_now: "Jogar no Navegador",
         btn_play_browser: "Jogar no Navegador",
         store_sub: "Disponível no",
-        art_sub: "Web & Mobile Oficial",
+        art_title: "BLOCK: Estratégia e Quebra-Cabeça",
+        art_sub: "Web e Mobile Oficial",
         game_title: "🎮 Jogue BLOCK Agora",
         game_subtitle: "Direto no seu navegador! Carregamento rápido sem precisar baixar nada.",
         status_online: "Versão Web 100% Online",
@@ -788,16 +759,8 @@
         th_player: "Jogador",
         th_country: "País",
         th_score: "Pontuação",
-        feat_title: "Recursos do Jogo",
-        feat_subtitle: "Uma experiência completa desenvolvida com estética moderna e som imersivo.",
-        f1_title: "Modo Aventura",
-        f1_desc: "Avance por dezenas de fases com objetivos desafiadores e metas de pontos.",
-        f2_title: "Modo Clássico",
-        f2_desc: "A experiência clássica sem limites de tempo para relaxar e bater seus recordes.",
-        f3_title: "Ranking Nacional & Global",
-        f3_desc: "Dispute posições em tempo real representando a bandeira do seu país.",
-        f4_title: "Visual e Som Neon",
-        f4_desc: "Partículas fluidas, efeitos de explosão satisfatórios e trilhas sonoras relaxantes.",
+        ranking_connecting: "Conectando ao banco de dados oficial...",
+        ranking_empty: "Nenhum recorde registrado ainda. Seja o primeiro a jogar e garantir seu lugar no topo do ranking! 🚀",
         footer_desc: "O quebra-cabeça definitivo de estratégia para Web e Android.",
         footer_nav: "Navegação",
         footer_legal: "Legal",
@@ -807,15 +770,16 @@
       en: {
         nav_play: "Play Online",
         nav_ranking: "Leaderboard",
-        nav_features: "Features",
         nav_privacy: "Privacy Policy",
         btn_play_header: "▶ Play",
         hero_badge: "The Most Addictive Puzzle of 2026",
+        hero_title_lead: "Fit, blast and dominate the",
         hero_highlight: "Global Leaderboard!",
         hero_desc: "Challenge your mind with strategic levels, electrifying combos, and compete for top ranks in real time.",
         btn_play_now: "Play in Browser",
         btn_play_browser: "Play in Browser",
         store_sub: "Get it on",
+        art_title: "BLOCK: Strategy & Puzzle",
         art_sub: "Official Web & Mobile",
         game_title: "🎮 Play BLOCK Now",
         game_subtitle: "Right in your browser! Fast loading with zero downloads required.",
@@ -829,16 +793,8 @@
         th_player: "Player",
         th_country: "Country",
         th_score: "Score",
-        feat_title: "Game Features",
-        feat_subtitle: "A complete experience designed with modern aesthetics and immersive audio.",
-        f1_title: "Adventure Mode",
-        f1_desc: "Progress through dozens of levels with challenging goals and high scores.",
-        f2_title: "Classic Mode",
-        f2_desc: "The timeless puzzle experience with no time limits to beat your high score.",
-        f3_title: "National & Global Ranks",
-        f3_desc: "Compete live representing your country flag on the world stage.",
-        f4_title: "Neon Visuals & Audio",
-        f4_desc: "Fluid particle explosions and satisfying sound design.",
+        ranking_connecting: "Connecting to official database...",
+        ranking_empty: "No high scores registered yet. Be the first to play and claim top rank! 🚀",
         footer_desc: "The ultimate block puzzle strategy game for Web and Android.",
         footer_nav: "Navigation",
         footer_legal: "Legal",
@@ -848,16 +804,17 @@
       es: {
         nav_play: "Jugar Online",
         nav_ranking: "Clasificación",
-        nav_features: "Características",
         nav_privacy: "Política de Privacidad",
         btn_play_header: "▶ Jugar",
         hero_badge: "El Rompecabezas Más Adictivo de 2026",
+        hero_title_lead: "Encaja, explota y domina el",
         hero_highlight: "¡Ránking Mundial!",
         hero_desc: "Desafía tu mente con niveles estratégicos y compite por los primeros puestos en tiempo real.",
         btn_play_now: "Jugar en Navegador",
         btn_play_browser: "Jugar en Navegador",
         store_sub: "Disponible en",
-        art_sub: "Web & Móvil Oficial",
+        art_title: "BLOCK: Estrategia y Rompecabezas",
+        art_sub: "Web y Móvil Oficial",
         game_title: "🎮 Juega a BLOCK Ahora",
         game_subtitle: "¡En tu navegador! Carga rápida sin necesidad de descargas.",
         status_online: "Versión Web 100% Online",
@@ -870,16 +827,8 @@
         th_player: "Jugador",
         th_country: "País",
         th_score: "Puntuación",
-        feat_title: "Características del Juego",
-        feat_subtitle: "Una experiencia completa con diseño moderno y sonido inmersivo.",
-        f1_title: "Modo Aventura",
-        f1_desc: "Avanza por decenas de niveles con objetivos desafiantes.",
-        f2_title: "Modo Clásico",
-        f2_desc: "La experiencia sin límite de tiempo para relajarse y superar tu récord.",
-        f3_title: "Ránking Nacional y Global",
-        f3_desc: "Compite en tiempo real representando a tu país.",
-        f4_title: "Visuales y Efectos Neon",
-        f4_desc: "Explosiones de partículas fluidas y música relajante.",
+        ranking_connecting: "Conectando a la base de datos oficial...",
+        ranking_empty: "Aún no hay puntuaciones registradas. ¡Sé el primero en jugar! 🚀",
         footer_desc: "El juego definitivo de estrategia de bloques para Web y Android.",
         footer_nav: "Navegación",
         footer_legal: "Legal",
@@ -889,16 +838,17 @@
       fr: {
         nav_play: "Jouer en Ligne",
         nav_ranking: "Classement",
-        nav_features: "Fonctionnalités",
         nav_privacy: "Politique de Confidentialité",
         btn_play_header: "▶ Jouer",
         hero_badge: "Le Puzzle le Plus Addictif de 2026",
+        hero_title_lead: "Emboîtez, explosez et dominez le",
         hero_highlight: "Classement Mondial !",
         hero_desc: "Défiez votre esprit et battez-vous pour les premières places mondiales en direct.",
         btn_play_now: "Jouer sur Navigateur",
         btn_play_browser: "Jouer sur Navigateur",
         store_sub: "Disponible sur",
-        art_sub: "Web & Mobile Officiel",
+        art_title: "BLOCK: Stratégie et Puzzle",
+        art_sub: "Web et Mobile Officiel",
         game_title: "🎮 Jouez à BLOCK",
         game_subtitle: "Directement dans votre navigateur ! Sans aucun téléchargement.",
         status_online: "Version Web 100% en Ligne",
@@ -911,16 +861,8 @@
         th_player: "Joueur",
         th_country: "Pays",
         th_score: "Score",
-        feat_title: "Fonctionnalités",
-        feat_subtitle: "Une expérience complète avec une esthétique moderne et un son immersif.",
-        f1_title: "Mode Aventure",
-        f1_desc: "Terminez des dizaines de niveaux palpitants.",
-        f2_title: "Mode Classique",
-        f2_desc: "Détendez-vous sans pression de temps.",
-        f3_title: "Classement National & Mondial",
-        f3_desc: "Défendez les couleurs de votre pays.",
-        f4_title: "Effets Visuels & Sonores",
-        f4_desc: "Des effets éclatants et une ambiance sonore soignée.",
+        ranking_connecting: "Connexion à la base de données...",
+        ranking_empty: "Aucun score enregistré. Soyez le premier à jouer ! 🚀",
         footer_desc: "Le jeu de puzzle de blocs ultime pour Web et Android.",
         footer_nav: "Navigation",
         footer_legal: "Légal",
@@ -930,15 +872,16 @@
       ru: {
         nav_play: "Играть Онлайн",
         nav_ranking: "Рейтинг",
-        nav_features: "Особенности",
         nav_privacy: "Конфиденциальность",
         btn_play_header: "▶ Играть",
         hero_badge: "Самая увлекательная головоломка 2026",
+        hero_title_lead: "Собирайте, взрывайте и покоряйте",
         hero_highlight: "Мировой Рейтинг!",
         hero_desc: "Развивайте мышление с уровнями и соревнуйтесь в реальном времени.",
         btn_play_now: "Играть в браузере",
         btn_play_browser: "Играть в браузере",
         store_sub: "Доступно в",
+        art_title: "BLOCK: Стратегия и Головоломка",
         art_sub: "Официальная Web и Mobile версия",
         game_title: "🎮 Играйте в BLOCK",
         game_subtitle: "Прямо в браузере! Без скачивания и установки.",
@@ -952,16 +895,8 @@
         th_player: "Игрок",
         th_country: "Страна",
         th_score: "Очки",
-        feat_title: "Особенности игры",
-        feat_subtitle: "Современная графика и приятная музыка.",
-        f1_title: "Режим Приключения",
-        f1_desc: "Десятки уровней с уникальными целями.",
-        f2_title: "Классический Режим",
-        f2_desc: "Бесконечная игра без таймера для рекордов.",
-        f3_title: "Рейтинг стран и мира",
-        f3_desc: "Соревнуйтесь под флагом своей страны.",
-        f4_title: "Неоновые Эффекты",
-        f4_desc: "Сочные взрывы линий и частиц.",
+        ranking_connecting: "Подключение к базе данных...",
+        ranking_empty: "Рекордов пока нет. Будьте первым! 🚀",
         footer_desc: "Лучшая блочная головоломка для Web и Android.",
         footer_nav: "Навигация",
         footer_legal: "Правовая информация",
@@ -971,15 +906,16 @@
       ja: {
         nav_play: "オンラインで遊ぶ",
         nav_ranking: "ランキング",
-        nav_features: "特徴",
         nav_privacy: "利用規約",
         btn_play_header: "▶ プレイ",
         hero_badge: "2026年最高のブロックパズル",
+        hero_title_lead: "ブロックを消して制覇しよう",
         hero_highlight: "世界ランキング！",
         hero_desc: "戦略的ステージとリアルタイムの世界ランキングで競い合おう。",
         btn_play_now: "ブラウザで遊ぶ",
         btn_play_browser: "ブラウザで遊ぶ",
         store_sub: "配信中",
+        art_title: "BLOCK: 戦略パズル",
         art_sub: "公式 Web & スマホ版",
         game_title: "🎮 今すぐBLOCKをプレイ",
         game_subtitle: "ブラウザですぐに遊べる！ダウンロード不要。",
@@ -993,16 +929,8 @@
         th_player: "プレイヤー",
         th_country: "国",
         th_score: "スコア",
-        feat_title: "ゲームの特徴",
-        feat_subtitle: "美しい演出と心地よいサウンド。",
-        f1_title: "アドベンチャー",
-        f1_desc: "数多くのチャレンジステージを攻略。",
-        f2_title: "クラシック",
-        f2_desc: "時間制限なしでじっくり遊べるモード。",
-        f3_title: "国別＆世界ランキング",
-        f3_desc: "世界のライバルとハイスコアを競おう。",
-        f4_title: "ネオン演出とBGM",
-        f4_desc: "爽快なエフェクトとリラックスサウンド。",
+        ranking_connecting: "データベースに接続中...",
+        ranking_empty: "記録はまだありません。最初のプレイヤーになろう！ 🚀",
         footer_desc: "WebおよびAndroid向け究極のブロックパズル。",
         footer_nav: "ナビゲーション",
         footer_legal: "規約",
@@ -1012,15 +940,16 @@
       zh: {
         nav_play: "在线畅玩",
         nav_ranking: "排行榜",
-        nav_features: "特色亮点",
         nav_privacy: "隐私政策",
         btn_play_header: "▶ 立即开玩",
         hero_badge: "2026年最令人上瘾的方块消除",
+        hero_title_lead: "拼合、消除并制霸",
         hero_highlight: "全球排行榜！",
         hero_desc: "挑战思维关卡，与全球玩家实时竞技。",
         btn_play_now: "在网页端游玩",
         btn_play_browser: "在网页端游玩",
         store_sub: "下载平台",
+        art_title: "BLOCK: 策略与益智消除",
         art_sub: "官方 Web 与移动端",
         game_title: "🎮 立即畅玩 BLOCK",
         game_subtitle: "网页端免安装！点击即刻享受完整体验。",
@@ -1034,16 +963,8 @@
         th_player: "玩家",
         th_country: "国家",
         th_score: "得分",
-        feat_title: "游戏特色",
-        feat_subtitle: "现代视觉美学与沉浸式音效打造。",
-        f1_title: "冒险模式",
-        f1_desc: "探索数十个精彩独特的挑战关卡。",
-        f2_title: "经典模式",
-        f2_desc: "无时间限制的无限消除体验。",
-        f3_title: "国家与全球排行",
-        f3_desc: "代表国家荣誉，角逐世界榜首。",
-        f4_title: "霓虹爆破特效",
-        f4_desc: "丝滑粒子爆炸与解压音效。",
+        ranking_connecting: "正在连接官方数据库...",
+        ranking_empty: "暂无记录。快来成为第一位登榜玩家吧！ 🚀",
         footer_desc: "专为网页与 Android 打造的终极方块益智游戏。",
         footer_nav: "导航",
         footer_legal: "法律信息",
@@ -1053,14 +974,16 @@
     };
 
     const flagMap = {
-      pt: { flag: '🇧🇷', name: 'PT' },
-      en: { flag: '🇺🇸', name: 'EN' },
-      es: { flag: '🇪🇸', name: 'ES' },
-      fr: { flag: '🇫🇷', name: 'FR' },
-      ru: { flag: '🇷🇺', name: 'RU' },
-      ja: { flag: '🇯🇵', name: 'JA' },
-      zh: { flag: '🇨🇳', name: 'ZH' }
+      pt: '🇧🇷',
+      en: '🇺🇸',
+      es: '🇪🇸',
+      fr: '🇫🇷',
+      ru: '🇷🇺',
+      ja: '🇯🇵',
+      zh: '🇨🇳'
     };
+
+    let currentLang = 'pt';
 
     function toggleLangMenu() {
       document.getElementById('langMenu').classList.toggle('show');
@@ -1074,24 +997,28 @@
 
     function setLanguage(lang) {
       if (!translations[lang]) return;
-      document.getElementById('currentLangFlag').innerText = flagMap[lang].flag;
-      document.getElementById('currentLangName').innerText = flagMap[lang].name;
+      currentLang = lang;
+      document.getElementById('currentLangFlag').innerText = flagMap[lang];
       document.getElementById('langMenu').classList.remove('show');
 
       document.querySelectorAll('.lang-item').forEach(el => {
-        if (el.innerText.includes(flagMap[lang].flag)) {
+        if (el.innerText.includes(flagMap[lang])) {
           el.classList.add('active');
         } else {
           el.classList.remove('active');
         }
       });
 
+      // Atualiza todos os textos com data-i18n no site
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (translations[lang][key]) {
           el.innerText = translations[lang][key];
         }
       });
+
+      // Recarrega o ranking caso esteja no estado vazio ou carregando para traduzir a mensagem
+      loadRanking(currentRankingType);
     }
 
     // 2. Fullscreen
@@ -1120,9 +1047,13 @@
       'PT': '🇵🇹', 'AR': '🇦🇷', 'MX': '🇲🇽', 'CA': '🇨🇦'
     };
 
+    let currentRankingType = 'global';
+
     async function loadRanking(type = 'global') {
+      currentRankingType = type;
       const tbody = document.getElementById('rankingBody');
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 30px;">Carregando classificação em tempo real...</td></tr>';
+      const t = translations[currentLang] || translations.pt;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 30px;">${t.ranking_connecting}</td></tr>`;
 
       let scores = [];
       try {
@@ -1152,7 +1083,7 @@
       }
 
       if (scores.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">Nenhum recorde registrado ainda. Seja o primeiro a jogar e garantir seu lugar no topo do ranking! 🚀</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">${t.ranking_empty}</td></tr>`;
         return;
       }
 
