@@ -652,6 +652,20 @@
       font-size: 16px;
     }
 
+    .level-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
@@ -903,12 +917,13 @@
               <th data-i18n="th_rank">Posição</th>
               <th data-i18n="th_player">Jogador</th>
               <th data-i18n="th_country">País</th>
+              <th data-i18n="th_level">Nível</th>
               <th data-i18n="th_score">Pontuação</th>
             </tr>
           </thead>
           <tbody id="rankingBody">
             <tr>
-              <td colspan="4" style="text-align: center; color: var(--text-dim); padding: 35px;"
+              <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 35px;"
                 data-i18n="ranking_connecting">
                 Conectando ao banco de dados oficial...
               </td>
@@ -982,6 +997,7 @@
         th_rank: "Posição",
         th_player: "Jogador",
         th_country: "País",
+        th_level: "Nível",
         th_score: "Pontuação",
         ranking_connecting: "Conectando ao banco de dados oficial...",
         ranking_empty: "Nenhum recorde registrado ainda. Seja o primeiro a jogar e garantir seu lugar no topo do ranking! 🚀",
@@ -1016,6 +1032,7 @@
         th_rank: "Rank",
         th_player: "Player",
         th_country: "Country",
+        th_level: "Level",
         th_score: "Score",
         ranking_connecting: "Connecting to official database...",
         ranking_empty: "No high scores registered yet. Be the first to play and claim top rank! 🚀",
@@ -1050,6 +1067,7 @@
         th_rank: "Puesto",
         th_player: "Jugador",
         th_country: "País",
+        th_level: "Nivel",
         th_score: "Puntuación",
         ranking_connecting: "Conectando a la base de datos oficial...",
         ranking_empty: "Aún no hay puntuaciones registradas. ¡Sé el primero en jugar! 🚀",
@@ -1084,6 +1102,7 @@
         th_rank: "Rang",
         th_player: "Joueur",
         th_country: "Pays",
+        th_level: "Niveau",
         th_score: "Score",
         ranking_connecting: "Connexion à la base de données...",
         ranking_empty: "Aucun score enregistré. Soyez le premier à jouer ! 🚀",
@@ -1118,6 +1137,7 @@
         th_rank: "Место",
         th_player: "Игрок",
         th_country: "Страна",
+        th_level: "Уровень",
         th_score: "Очки",
         ranking_connecting: "Подключение к базе данных...",
         ranking_empty: "Рекордов пока нет. Будьте первым! 🚀",
@@ -1152,6 +1172,7 @@
         th_rank: "順位",
         th_player: "プレイヤー",
         th_country: "国",
+        th_level: "レベル",
         th_score: "スコア",
         ranking_connecting: "データベースに接続中...",
         ranking_empty: "記録はまだありません。最初のプレイヤーになろう！ 🚀",
@@ -1186,6 +1207,7 @@
         th_rank: "排名",
         th_player: "玩家",
         th_country: "国家",
+        th_level: "关卡",
         th_score: "得分",
         ranking_connecting: "正在连接官方数据库...",
         ranking_empty: "暂无记录。快来成为第一位登榜玩家吧！ 🚀",
@@ -1277,7 +1299,7 @@
       currentRankingType = type;
       const tbody = document.getElementById('rankingBody');
       const t = translations[currentLang] || translations.pt;
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 30px;">${t.ranking_connecting}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 30px;">${t.ranking_connecting}</td></tr>`;
 
       let scores = [];
       try {
@@ -1332,7 +1354,7 @@
       }
 
       if (scores.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">${t.ranking_empty}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 40px; font-size: 15px;">${t.ranking_empty}</td></tr>`;
         return;
       }
 
@@ -1349,6 +1371,7 @@
         const flag = countryFlags[cCode] || '🌐';
         const pName = item.nickname || item.player_name || 'Jogador';
         const scoreVal = item.score || 0;
+        const levelVal = item.level || 1;
 
         html += `
           <tr>
@@ -1360,6 +1383,7 @@
               </div>
             </td>
             <td>${cCode}</td>
+            <td><span class="level-tag">Nv. ${levelVal}</span></td>
             <td><div class="score-txt">${scoreVal.toLocaleString()} pts</div></td>
           </tr>
         `;
